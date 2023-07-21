@@ -1,0 +1,152 @@
+archetype rosca_bidding
+
+// Define participant structure
+record participant {
+  address : address;
+  contributed : bool = false;
+  pot_received : bool = false;
+  penalty_points : int = 0;
+}
+
+record bid  {
+  bidder : address;
+  amount : tez;
+}
+
+states =
+| paused
+| unpaused
+
+// Define the storage structure
+variable pot : tez = 0tz
+variable current_bid : bid
+variable current_receiver : address = ""
+constant max_participants : int = 10
+constant min_bid : tez = 1tz
+constant metadataIpfsHash : string = ""
+variable participants : list(participant) = list[]
+
+
+// Define events
+event potReceived
+event potDistributed
+event participantAdded
+event participantBanned
+
+transition unpause () {
+   called by owner
+   from paused to unpaused
+   with effect {
+    paused := bool = false;
+   }
+}
+
+// Define entries
+entry join(new_participant : address) {
+  state is unpaused otherwise "ROSCA not yet started"
+  require{
+  r1: !participants.map(p => p.address).contains(new_participant) otherwise "AlreadyJoined";
+  r2: participants.length() < max_participants otherwise "MaxParticipantsReached";
+  }
+
+  effect{
+  participants.push(participant(new_participant, false, false, 0));
+  }
+}
+
+entry contribute(participant_address : address, amount : tez) {
+  state is unpaused otherwise "ROSCA not yet started"
+  let contributor = participants.find(p => p.address = participant_address);
+  require{
+  r3: contributor.found otherwise "InvalidParticipant";
+  r4: !contributor.get.contributed otherwise "AlreadyPaid";
+  }
+
+  effect{
+  contributor.get.contributed := true;
+  pot += amount;
+  }
+  
+}
+
+entry place_bid(participant_address : address, amount : tez) {
+  state is unpaused otherwise "ROSCA not yet started"
+  require{
+  r5: amount > current_bid.amount otherwise "InvalidBidAmount"
+  r6: amount >= min_bid otherwise "InvalidBidAmount";
+  r7: bidder.found otherwise "InvalidParticipant";
+  }
+  effect{
+  let bidder = participants.find(p => p.address = participant_address);
+  current_bid.bidder := participant_address;
+  current_bid.amount := amount;
+  }
+}
+
+entry distribute() {
+  state is unpaused otherwise "ROSCA not yet started"
+  let receiver = participants.find(p => p.address = current_bid.bidder);
+  require{
+  r8: receiver.found otherwise "InvalidReceiver";
+  r9: !receiver.get.pot_received otherwise "AlreadyReceived";
+  r10:pot > 0tz otherwise "NoFunds";
+  }
+
+  effect{
+  transfer current_bid.bidder to pot;
+  receiver.get.pot_received := true;
+  pot := 0tz;
+  participants.foreach(p => p.contributed := false);
+  }
+  
+}
+
+entry penalize(non_contributor : address) {
+  called by owner
+  let to_penalize = participants.find(p => p.address = non_contributor);
+  require{
+  r11: to_penalize.found otherwise "InvalidParticipant";
+  r12: !to_penalize.get.contributed otherwise "NoPenalty";
+  }
+
+  effect{
+  to_penalize.get.penalty_points += 1;
+  if to_penalize.get.penalty_points >= 3 then
+  participants := participants.remove(non_contributor)
+  }
+  
+}
+
+entry pause() {
+  called by owner
+  paused := true;
+}
+
+entry unpause() {
+  called by owner
+  paused := false;
+}
+
+entry setMetadataIpfsHash(newHash : string) {
+  called by owner
+  metadataIpfsHash := newHash;
+}
+
+view getMetadataIpfsHash() -> string {
+  return metadataIpfsHash
+}
+
+transition reset_system() {
+  called by owner
+  require(participants.all(p => p.pot_received), "NotAllReceived");
+  participants.foreach(p => {
+    p.contributed := false;
+    p.pot_received := false;
+  });
+  current_bid.bidder := "";
+  current_bid.amount := 0tz;
+}
+
+sort(list : list(participant)) -> list(participant) {
+  return list.sort((a, b) => a.amount < b.amount);
+}
