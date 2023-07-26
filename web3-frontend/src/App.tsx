@@ -1,45 +1,13 @@
 import './App.css';
-import {useEffect, useState, Fragment} from 'react';
+import  {useState} from 'react';
 import { WalletInfo } from './components/WalletInfo';
 import RoscaCard from './components/RoscaCard';
-// import {HiOutlineCollection} from 'react-icons/hi'
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
 
 function App() {
-  const [account, setAccount] = useState<string>("");
-  const [balance, setBalance] = useState<string>("");
-  const [statekeepers, setStatekeepers] = useState<string[]>(["No Statekeepers defined yet."]);
-  const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
-  const [proposals, setProposals] = useState<[]>([]);
-  const [loading, setLoading] = useState(false);
+
   const [contracts, setContracts] = useState(["KT1SWzzbD7YzrtZmJSGeGGmLhUFZnJcMYB4i","KT1Edr28YEyZCq3N9d4Gq14eJFNbWHdQa5cg"])
 
-  async function addTrustedIssuer(address: string) {
-    if (0) {
-
-    }else setTrustedIssuers([])
-  }
-
-  async function removeTrustedIssuer(did: string) {
-    if (0) {
-
-    }else setTrustedIssuers([])
-  }
-
-  async function proposeStatekeeperAddition(address: string) {
-    if (0) {
-
-    }else setProposals(proposals)
-  }
-
-  async function proposeStatekeeperDeletion(address: string) {
-    if (0) {
-
-    } else setProposals(proposals)
-  }
   return (
     <div className="flex-col flex">
       <header className="bg-[#09427d]">
@@ -85,7 +53,7 @@ function App() {
                     </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        {/* <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div> */}
+                        
                       <span
                         className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
                     </div>

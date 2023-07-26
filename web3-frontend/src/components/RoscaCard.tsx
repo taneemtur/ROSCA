@@ -2,12 +2,10 @@
 import { TezosToolkit } from '@taquito/taquito'
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { useAppName, useContractAddress, useEndpoint, useNetwork } from '../contexts/Settings'
+import {  useEndpoint } from '../contexts/Settings'
 // import {FaCoins, FaUserTie, FaUsers} from 'react-icons/fa'
 
 const RoscaCard = (props:any) => {
-    const name = useAppName()
-    const network = useNetwork()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
     const tezos = new TezosToolkit(endpoint)
