@@ -1,152 +1,292 @@
-archetype rosca_bidding
+archetype test(owner : address, totalRosca: tez, durationRosca: duration, maxUsers: nat)
 
-// Define participant structure
-record participant {
-  address : address;
-  contributed : bool = false;
-  pot_received : bool = false;
-  penalty_points : int = 0;
+//deployed contract url "https://better-call.dev/ghostnet/KT1Edr28YEyZCq3N9d4Gq14eJFNbWHdQa5cg"
+
+function is_not_paused() : bool {                                                         //returns true when rosca is not paused
+  do_fail_if(paused, "CONTRACT_PAUSED");
+  return true
 }
 
-record bid  {
-  bidder : address;
-  amount : tez;
+function is_not_contributed(participant_address: address) : bool {                        //returns true when participant is not contributed
+  do_fail_if(participant[participant_address].contributed, "ALREADY_CONTRIBUTED");
+  return true
 }
 
-states =
-| paused
-| unpaused
-
-// Define the storage structure
-variable pot : tez = 0tz
-variable current_bid : bid
-variable current_receiver : address = ""
-constant max_participants : int = 10
-constant min_bid : tez = 1tz
-constant metadataIpfsHash : string = ""
-variable participants : list(participant) = list[]
-
-
-// Define events
-event potReceived
-event potDistributed
-event participantAdded
-event participantBanned
-
-transition unpause () {
-   called by owner
-   from paused to unpaused
-   with effect {
-    paused := bool = false;
-   }
+function is_all_contributed() : bool {                                                    //returns true when all participants are contributed
+  for p in participant do
+    do_require(participant[p].contributed,"NOT ALL CONTRIBUTED")
+  done;
+  return true
 }
 
-// Define entries
-entry join(new_participant : address) {
-  state is unpaused otherwise "ROSCA not yet started"
-  require{
-  r1: !participants.map(p => p.address).contains(new_participant) otherwise "AlreadyJoined";
-  r2: participants.length() < max_participants otherwise "MaxParticipantsReached";
+function is_all_received() : bool {                                                       //returns true when all participants are received
+  for p in participant do
+    do_require(participant[p].pot_received,"NOT ALL RECEIVED")
+  done;
+  return true
+}
+
+function set_current_receiver() {                                                         //sets current receiver
+  for p in participant do
+    if(participant[p].pot_received<>true)then begin
+      receiver := some(p);
+    end
+  done
+}
+
+function calculate_amount(): tez{                                                          //calculates the amount of payment per participant
+  do_require(participants_count>0,"ANY PARTICIPANTS DOESNT EXIST");
+  return ((mutez_to_nat(rosca_total)/participants_count) * 1utz)
+}
+
+//Pausable ---------------------------------------------------------------------
+entry pause() {                                                                            //pauses the rosca process
+  require {
+    pausable_r1: is_not_paused() otherwise "ALREADY PAUSED"
   }
+  effect {
+    paused := true;
+    emit<Paused>({now})
+  }
+}
 
+entry unpause() {                                                                         //resumes the rosca process
+  require {
+    pausable_r2: paused otherwise "CONTRACT_NOT_PAUSED"
+  }
+  effect {
+    paused := false;
+    emit<Resumed>({now})
+  }
+}
+
+//States ---------------------------------------------------------------------
+states = 
+|Starting
+|Collecting initial
+|Contributing
+|Distirbuting
+|Distirbuted
+
+//Storage---------------------------------------------------------------------
+asset participant identified by p_address{                                                //participant struct
+  id : nat ;
+  p_address : address;
+  contributed : bool ;
+  pot_received : bool ;
+}
+
+variable rosca_total : tez = totalRosca
+variable contributing_duration : duration = durationRosca
+variable max_participants : nat = maxUsers
+
+variable paused : bool = false
+variable pot : tez = 0tz   
+variable participants_count : nat = 0
+variable contributors_count : nat = 0
+variable end_time : option<date> = none
+variable receiver : option<address> = none
+variable admin : address = owner
+
+//events ------------------------------------------------------------------------
+event Joined{
+  user : address;
+  timestamp : date
+}
+event Contributed{
+  user : address;
+  timestamp : date
+}
+event ContributionStarted{
+  timestamp : date
+}
+event Paused{
+  timestamp : date
+}
+event Resumed{
+  timestamp : date
+}
+//methods ------------------------------------------------------------------------
+entry default() {}                                                                       //allows contract to give amounts
+
+transition start(roscaTotal: tez, roscaDuration: duration , maxParticipants: nat ){      //starts rosca 
+  called by admin
+  state is Starting
+  require {
+    is_paused_r1: is_not_paused() otherwise "Rosca is Paused"
+  }
+  from Starting to Collecting
+  with effect{
+    rosca_total := roscaTotal;
+    contributing_duration := roscaDuration;
+    max_participants := maxParticipants;
+  }
+}
+
+entry join(){                                                                              //allows participans to join rosca
+  state is Collecting
+  require {
+      is_paused_r2: is_not_paused() otherwise "Rosca is Paused";
+      join_r1: participants_count<=max_participants otherwise "Maximum number of participants reached."
+  }
+  fail if {
+    c1: participant.contains(caller);
+  }
   effect{
-  participants.push(participant(new_participant, false, false, 0));
+    participants_count += 1;
+    participant.add({id = participants_count; p_address= caller; contributed=false; pot_received=false});
+    emit<Joined>({caller; now})
   }
 }
 
-entry contribute(participant_address : address, amount : tez) {
-  state is unpaused otherwise "ROSCA not yet started"
-  let contributor = participants.find(p => p.address = participant_address);
-  require{
-  r3: contributor.found otherwise "InvalidParticipant";
-  r4: !contributor.get.contributed otherwise "AlreadyPaid";
+transition start_contributing (){                                                           //starts contirbuting section
+  called by admin
+  state is Collecting
+  require {
+    is_paused_r3: is_not_paused() otherwise "Rosca is Paused";
   }
+  from Collecting to Contributing 
+  with effect{
+  end_time := some((now+contributing_duration));
+  emit<ContributionStarted>({now})
+  }
+}
 
+entry contribute(){                                                                         //allows participants to contribute amount
+  state is Contributing
+  require {
+    is_paused_r4: is_not_paused() otherwise "Rosca is Paused";
+    contribute_r1: participant.contains(caller) otherwise "NOT PARTICIPANT";
+    contribute_r2: is_not_contributed(caller) otherwise "Already Contributed";
+    contribute_r3: transferred=calculate_amount() otherwise "PLEASE MAKE SURE TO SEND THE EXACT AMOUNT";
+    contribute_r4: end_time ? the > now : false otherwise "Contibution finished";
+  }
   effect{
-  contributor.get.contributed := true;
-  pot += amount;
+    contributors_count +=1;
+    participant.update(caller, {
+      contributed = true
+    });
+    pot += transferred;
+    emit<Contributed>({caller; now})
   }
-  
 }
 
-entry place_bid(participant_address : address, amount : tez) {
-  state is unpaused otherwise "ROSCA not yet started"
-  require{
-  r5: amount > current_bid.amount otherwise "InvalidBidAmount"
-  r6: amount >= min_bid otherwise "InvalidBidAmount";
-  r7: bidder.found otherwise "InvalidParticipant";
+transition end_contributing (){                                                             //ends contirbuting section
+  called by admin
+  state is Contributing
+  require {
+    is_paused_r5: is_not_paused() otherwise "Rosca is Paused";
+    end_contributing_r1: end_time ? now > the : false otherwise "Contibution finished";
+  }
+  from Contributing to Distirbuting
+  with effect{
+    for p in participant do
+    if(participant[p].contributed<>true) then begin //ban section
+      participant.remove(p);
+      participants_count -=1;
+    end 
+    done;
+    set_current_receiver()
+  }
+}
+
+transition disturbute() {                                                                   //distirbutes pot to receiver
+  called by admin
+  state is Distirbuting
+  require {
+    is_paused_r8: is_not_paused() otherwise "Rosca is Paused";
+    disturbute_r1: pot>0tz otherwise "Pot is equal to zero";
+  }
+  from Distirbuting to Distirbuted
+  with effect{
+    const r ?= receiver : "RECEIVER IS NONE";
+    pot := 0tz;
+    participant.update(r, {
+      pot_received = true
+    });
+    transfer balance to r;
+    receiver := none;
+  }
+}
+
+transition continue() {                                                                     //continues rosca and allow restart contribute section
+  called by admin
+  state is Distirbuted
+  require {
+    is_paused_r9: is_not_paused() otherwise "Rosca is Paused"; 
+  }
+  fail if{
+    c3: is_all_received()
+  }
+  from Distirbuted to Contributing
+  with effect {
+    for p in participant do
+    participant.update(p, {
+      contributed = false
+    });
+    done;
+    contributors_count := 0;
+  }
+}
+
+transition reset(){                                                                        //resets rosca                                                                                 
+  called by admin
+  state is Distirbuted  
+  require {
+    reset_r1: is_all_received() otherwise "Not All Recevied"
+  }
+  from Distirbuted to Starting
+  with effect{
+    for p in participant do
+      participant.remove(p);
+    done;
+  }
+}
+
+entry changeAdmin(admin_address: address){
+  require {
+    r: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R or admin_address = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu
   }
   effect{
-  let bidder = participants.find(p => p.address = participant_address);
-  current_bid.bidder := participant_address;
-  current_bid.amount := amount;
+    admin := admin_address
   }
 }
 
-entry distribute() {
-  state is unpaused otherwise "ROSCA not yet started"
-  let receiver = participants.find(p => p.address = current_bid.bidder);
-  require{
-  r8: receiver.found otherwise "InvalidReceiver";
-  r9: !receiver.get.pot_received otherwise "AlreadyReceived";
-  r10:pot > 0tz otherwise "NoFunds";
-  }
 
-  effect{
-  transfer current_bid.bidder to pot;
-  receiver.get.pot_received := true;
-  pot := 0tz;
-  participants.foreach(p => p.contributed := false);
-  }
-  
+//views --------------------------------------------------------------------
+view show_balance() : tez {
+  return balance
 }
 
-entry penalize(non_contributor : address) {
-  called by owner
-  let to_penalize = participants.find(p => p.address = non_contributor);
-  require{
-  r11: to_penalize.found otherwise "InvalidParticipant";
-  r12: !to_penalize.get.contributed otherwise "NoPenalty";
-  }
-
-  effect{
-  to_penalize.get.penalty_points += 1;
-  if to_penalize.get.penalty_points >= 3 then
-  participants := participants.remove(non_contributor)
-  }
-  
+view show_conributing_cost() : tez{
+  return calculate_amount()
 }
 
-entry pause() {
-  called by owner
-  paused := true;
+view show_currentState(): string {
+  var currentState: string =  "";
+  match state with
+  |Starting -> currentState := "Starting"
+  |Collecting -> currentState := "Collecting"
+  |Contributing -> currentState := "Contributing"
+  |Distirbuting -> currentState := "Distirbuting"
+  |Distirbuted -> currentState := "Distirbuted"
+  end;
+  return currentState
 }
 
-entry unpause() {
-  called by owner
-  paused := false;
+view show_receiver(): address {
+  const r ?= receiver : "RECEIVER IS NONE";
+  return r
 }
 
-entry setMetadataIpfsHash(newHash : string) {
-  called by owner
-  metadataIpfsHash := newHash;
+view show_isAllContributed(): bool {
+  return is_all_contributed()
 }
 
-view getMetadataIpfsHash() -> string {
-  return metadataIpfsHash
+view show_isAllReceived(): bool {
+  return is_all_received()
 }
 
-transition reset_system() {
-  called by owner
-  require(participants.all(p => p.pot_received), "NotAllReceived");
-  participants.foreach(p => {
-    p.contributed := false;
-    p.pot_received := false;
-  });
-  current_bid.bidder := "";
-  current_bid.amount := 0tz;
-}
-
-sort(list : list(participant)) -> list(participant) {
-  return list.sort((a, b) => a.amount < b.amount);
+view show_participant(participant_address : address): option<asset_value<participant>>{
+ return participant[participant_address]
 }

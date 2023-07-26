@@ -1,5 +1,84 @@
 {
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "@completium/completium-cli": "^0.4.86"
+    "@airgap/beacon-sdk": "^4.0.5",
+    "@completium/completium-cli": "^0.4.86",
+    "@headlessui/react": "^1.5.0",
+    "@heroicons/react": "^1.0.6",
+    "@tailwindcss/forms": "^0.5.0",
+<<<<<<< HEAD
+    "@taquito/beacon-wallet": "^17.1.0",
+    "@taquito/taquito": "^17.1.0",
+=======
+    "@taquito/taquito": "^17.1.0",
+    "@temple-wallet/dapp": "^8.0.0",
+>>>>>>> main
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^11.1.1",
+    "@testing-library/user-event": "^13.5.0",
+    "@thanos-wallet/dapp": "^2.2.2",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.27",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.15",
+    "boring-avatars": "^1.7.0",
+    "constate": "^3.3.2",
+<<<<<<< HEAD
+=======
+    "path-browserify": "^1.0.1",
+>>>>>>> main
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.14.2",
+    "react-scripts": "5.0.1",
+    "react-spinners": "^0.11.0",
+    "typescript": "^5.1.6",
+    "web-vitals": "^2.1.4",
+    "web3": "^1.7.3"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": "^5.57.1",
+    "fork-ts-checker-webpack-plugin": "^6.5.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "autoprefixer": "^10.4.4",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "postcss": "^8.4.12",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.0.24",
+    "url": "^0.11.0"
   }
 }
