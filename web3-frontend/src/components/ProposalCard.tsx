@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
-import {Contract} from "web3-eth-contract";
-import {CheckIcon, LightningBoltIcon, XIcon} from "@heroicons/react/outline";
+
 
 interface ProposalCardProps {
   proposalId: number;
@@ -14,7 +13,6 @@ interface ProposalCardProps {
   newRateType: ProposalType;
   voteFunc: any;
   enforceFunc: any;
-  contract: Contract | undefined;
 }
 
 export enum ProposalType {
@@ -42,15 +40,9 @@ export default function ProposalCard(props: ProposalCardProps) {
   const newRateType = props.newRateType;
   const enforceFunc = props.enforceFunc;
   const currentAccount = props.currentAccount;
-  const contract = props.contract;
 
   const [neededVotes, setNeededVotes] = useState<number>(-1);
 
-  useEffect(() => {
-    if (contract) {
-      contract.methods.getNeededVotes(proposalId).call().then(setNeededVotes);
-    }
-  }, [contract])
 
   return (
     <li className="col-span-2 bg-white rounded-xl shadow shadow-xl divide-y divide-gray-200">
@@ -110,7 +102,7 @@ export default function ProposalCard(props: ProposalCardProps) {
                 voteFunc(proposalId, true)
               }}
                  className="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500">
-                <CheckIcon className='w-5 h-5 text-gray-400'/>
+            
                 <span className="ml-3">Vote Yea</span>
               </a>
             </div>
@@ -119,7 +111,7 @@ export default function ProposalCard(props: ProposalCardProps) {
                 voteFunc(proposalId, false)
               }}
                  className="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-br-lg hover:text-gray-500">
-                <XIcon className='w-5 h-5 text-gray-400'/>
+        
                 <span className="ml-3">Vote Nay</span>
               </a>
             </div>
@@ -133,7 +125,7 @@ export default function ProposalCard(props: ProposalCardProps) {
               }}
                  className="relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700
                 font-medium border border-transparent rounded-bl-lg hover:text-gray-500">
-                <LightningBoltIcon className='w-5 h-5 text-gray-400'/>
+                
                 <span className="ml-3">Enforce Proposal</span>
               </a>
             </div>

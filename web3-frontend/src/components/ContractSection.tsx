@@ -1,6 +1,5 @@
 import InputModal, {InputTypes} from "./InputModal";
 import {useState} from "react";
-import Avatar from "boring-avatars";
 
 interface ContractSectionProps {
   title: string;
@@ -77,12 +76,6 @@ export default function ContractSection(props: ContractSectionProps) {
                         className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 flex items-center">
                         {!entry.includes("did") &&
                           <span className="mr-3">
-                            <Avatar
-                              size={40}
-                              name={entry}
-                              variant="beam"
-                              colors={["#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"]}
-                            />
                           </span>
                         }
                         {entry.includes("did") ? <a href={"https://dev.uniresolver.io/1.0/identifiers/" + entry}

@@ -1,7 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import {Dialog, Transition} from '@headlessui/react'
 import {Fragment, useState} from 'react'
-import {XIcon} from "@heroicons/react/outline";
 
 interface InputModalProps {
   open: boolean;
@@ -66,7 +65,6 @@ export default function InputModal(props: InputModalProps) {
                   onClick={() => setOpen(false)}
                 >
                   <span className="sr-only">Close</span>
-                  <XIcon className="h-6 w-6" aria-hidden="true"/>
                 </button>
               </div>
               <div>

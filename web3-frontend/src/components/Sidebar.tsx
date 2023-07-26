@@ -1,23 +1,14 @@
 import {Fragment, useState} from 'react'
 import {Dialog, Transition} from '@headlessui/react'
-import {
-  CalendarIcon,
-  ChartBarIcon,
-  FolderIcon,
-  HomeIcon,
-  InboxIcon,
-  MenuIcon,
-  UsersIcon,
-  XIcon,
-} from '@heroicons/react/outline'
+
 
 const navigation = [
-  {name: 'Dashboard', href: '#', icon: HomeIcon, current: true},
-  {name: 'Team', href: '#', icon: UsersIcon, current: false},
-  {name: 'Projects', href: '#', icon: FolderIcon, current: false},
-  {name: 'Calendar', href: '#', icon: CalendarIcon, current: false},
-  {name: 'Documents', href: '#', icon: InboxIcon, current: false},
-  {name: 'Reports', href: '#', icon: ChartBarIcon, current: false},
+  {name: 'Dashboard', href: '#',  current: true},
+  {name: 'Team', href: '#',  current: false},
+  {name: 'Projects', href: '#',  current: false},
+  {name: 'Calendar', href: '#',  current: false},
+  {name: 'Documents', href: '#',  current: false},
+  {name: 'Reports', href: '#',  current: false},
 ]
 
 function classNames(...classes: string[]) {
@@ -75,7 +66,6 @@ export default function Sidebar(props: AccountInfo) {
                     onClick={() => setSidebarOpen(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XIcon className="h-6 w-6 text-white" aria-hidden="true"/>
                   </button>
                 </div>
               </Transition.Child>
@@ -99,7 +89,6 @@ export default function Sidebar(props: AccountInfo) {
                         'group flex items-center px-2 py-2 text-base font-medium rounded-md'
                       )}
                     >
-                      <item.icon className="mr-4 flex-shrink-0 h-6 w-6 text-indigo-300" aria-hidden="true"/>
                       {item.name}
                     </a>
                   ))}
@@ -152,7 +141,7 @@ export default function Sidebar(props: AccountInfo) {
                     'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
                   )}
                 >
-                  <item.icon className="mr-3 flex-shrink-0 h-6 w-6 text-indigo-300" aria-hidden="true"/>
+                  
                   {item.name}
                 </a>
               ))}
@@ -185,7 +174,6 @@ export default function Sidebar(props: AccountInfo) {
             onClick={() => setSidebarOpen(true)}
           >
             <span className="sr-only">Open sidebar</span>
-            <MenuIcon className="h-6 w-6" aria-hidden="true"/>
           </button>
         </div>
       </div>
