@@ -3,10 +3,18 @@ import  {useState} from 'react';
 import { WalletInfo } from './components/WalletInfo';
 import RoscaCard from './components/RoscaCard';
 import {HiOutlineCollection} from 'react-icons/hi'
+import { useBeacon, useWalletAddress } from './contexts/Beacon';
+
 
 function App() {
-
-  const [contracts, setContracts] = useState(["KT1SWzzbD7YzrtZmJSGeGGmLhUFZnJcMYB4i","KT1Edr28YEyZCq3N9d4Gq14eJFNbWHdQa5cg"])
+  const userAddress = useWalletAddress()
+  const [contracts, setContracts] = useState([
+    "KT1NdFnFYViDagZsU3WBgvcY4J2zMTvJX1ZP",
+    "KT1Gfn8PrRuKYYrTVCJSxqF1x2LC9Lzap94Q",
+    "KT1T8Cx1oTQ7rRGDNij4qnrCiTkGFNeGnd3A",
+    "KT1B61wqv53BqWpLo3wR6hTWyZgRAFskaiMe",
+    "KT1WPM5LvxCCNmNZuHnYpYXnJeobWKPpruVy"
+  ])
 
   return (
     <div className="flex-col flex">
@@ -44,18 +52,21 @@ function App() {
               <div className="sm:flex-auto">
                 <h1 className="text-xl font-semibold text-gray-900">Cohorts</h1>
                 <p className="mt-2 text-sm text-gray-700">
-                  A list of Cohorts to be participated on.
+                  A list of Cohorts to be participated on.      
                 </p>
-                    <div>
-                      {contracts.map((c)=>{
-                      return <RoscaCard contract={c}/>
-                      })}
-                    </div>
                     <div
-                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>
-                      <span
-                        className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
+                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ">
+                        {contracts && userAddress ?
+                        <div className="flex flex-row flex-wrap">
+                          {contracts.map((c)=>{
+                          return <RoscaCard contract={c}/>
+                          })}
+                        </div>:
+                        <div className="">
+                          <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>
+                          <span className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
+                        </div>
+                        }
                     </div>
               </div>
             </div>

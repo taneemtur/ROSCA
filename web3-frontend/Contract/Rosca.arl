@@ -21,7 +21,7 @@ function is_all_contributed() : bool {                                          
 
 function is_all_received() : bool {                                                       //returns true when all participants are received
   for p in participant do
-    do_require(participant[p].pot_received,"NOT ALL RECEIVED")
+    do_require(participant[p].pot_received,"NOT ALL RECEIVED");
   done;
   return true
 }
@@ -38,6 +38,18 @@ function calculate_amount(): tez{                                               
   do_require(participants_count>0,"ANY PARTICIPANTS DOESNT EXIST");
   return ((mutez_to_nat(rosca_total)/participants_count) * 1utz)
 }
+
+// function current_state(): string {
+//   var currentState: string =  "";
+//   match state with
+//   |Starting -> currentState := "Starting"
+//   |Collecting -> currentState := "Collecting"
+//   |Contributing -> currentState := "Contributing"
+//   |Distirbuting -> currentState := "Distirbuting"
+//   |Distirbuted -> currentState := "Distirbuted"
+//   end;
+//   return currentState
+// }
 
 //Pausable ---------------------------------------------------------------------
 entry pause() {                                                                            //pauses the rosca process
@@ -84,6 +96,8 @@ variable paused : bool = false
 variable pot : tez = 0tz   
 variable participants_count : nat = 0
 variable contributors_count : nat = 0
+variable banned_count : nat = 0
+variable received_count : nat = 0
 variable end_time : option<date> = none
 variable receiver : option<address> = none
 variable admin : address = owner
@@ -144,6 +158,7 @@ transition start_contributing (){                                               
   state is Collecting
   require {
     is_paused_r3: is_not_paused() otherwise "Rosca is Paused";
+    start_r1: participants_count>=1 otherwise "ANY PARTICIPANTS DOESNT EXIST"
   }
   from Collecting to Contributing 
   with effect{
@@ -182,11 +197,15 @@ transition end_contributing (){                                                 
   with effect{
     for p in participant do
     if(participant[p].contributed<>true) then begin //ban section
+      rosca_total -= calculate_amount();
       participant.remove(p);
       participants_count -=1;
+      banned_count += 1;
     end 
     done;
-    set_current_receiver()
+    if(participants_count>=1)then begin
+      set_current_receiver()
+    end
   }
 }
 
@@ -195,7 +214,8 @@ transition disturbute() {                                                       
   state is Distirbuting
   require {
     is_paused_r8: is_not_paused() otherwise "Rosca is Paused";
-    disturbute_r1: pot>0tz otherwise "Pot is equal to zero";
+    distirbute_r1: pot>0tz otherwise "Pot is equal to zero";
+    distirbute_r2: participants_count>=1 otherwise "ANY PARTICIPANTS DOESNT EXIST"
   }
   from Distirbuting to Distirbuted
   with effect{
@@ -204,6 +224,7 @@ transition disturbute() {                                                       
     participant.update(r, {
       pot_received = true
     });
+    received_count +=1;
     transfer balance to r;
     receiver := none;
   }
@@ -233,19 +254,42 @@ transition reset(){                                                             
   called by admin
   state is Distirbuted  
   require {
-    reset_r1: is_all_received() otherwise "Not All Recevied"
+    reset_r1: is_all_received() or (is_all_received() and participants_count=0) otherwise "Not All Recevied"
   }
   from Distirbuted to Starting
   with effect{
     for p in participant do
       participant.remove(p);
     done;
+    participants_count := 0;
+    banned_count := 0;
+    received_count := 0;
+    end_time := none
+  }
+}
+
+transition emergency_reset(){
+  fail if {
+    c4: participants_count>=1
+  }
+  from (Collecting or Contributing or Distirbuting or Distirbuted) to Starting
+  with effect{
+    for p in participant do
+      participant.remove(p);
+    done;
+    banned_count := 0;
+    received_count := 0;
+    end_time := none;
+    receiver := none;
+    pot := 0tz
   }
 }
 
 entry changeAdmin(admin_address: address){
   require {
-    r: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R or admin_address = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu
+    r: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
+    or admin_address = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu 
+    or admin_address = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR
   }
   effect{
     admin := admin_address
@@ -262,17 +306,9 @@ view show_conributing_cost() : tez{
   return calculate_amount()
 }
 
-view show_currentState(): string {
-  var currentState: string =  "";
-  match state with
-  |Starting -> currentState := "Starting"
-  |Collecting -> currentState := "Collecting"
-  |Contributing -> currentState := "Contributing"
-  |Distirbuting -> currentState := "Distirbuting"
-  |Distirbuted -> currentState := "Distirbuted"
-  end;
-  return currentState
-}
+// view show_currentState(): string {
+//   return current_state()
+// }
 
 view show_receiver(): address {
   const r ?= receiver : "RECEIVER IS NONE";

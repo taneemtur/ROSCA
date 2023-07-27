@@ -10,6 +10,7 @@ export const [
   BeaconProvider,
   useWalletAddress,
   useWalletName,
+  useBeacon,
   useConnect,
   useDisconnect,
   useIsConnected
@@ -17,6 +18,7 @@ export const [
   MakeBeacon,
   (v) => v.beaconState.user_address,
   (v) => v.beaconState.wallet,
+  (v) => v.beaconState.beacon,
   (v) => v.utils.connect,
   (v) => v.utils.disconnect,
   (v) => v.utils.is_connected
@@ -33,7 +35,7 @@ function MakeBeacon() {
     user_address : undefined | string,
     wallet       : undefined | string,
   } => ({
-    beacon       : new BeaconWallet({ name : name, preferredNetwork : network }),
+    beacon       : new BeaconWallet({ name : name, preferredNetwork : network,}),
     user_address : undefined,
     wallet       : undefined
   }));
