@@ -15,6 +15,9 @@ function App() {
     "KT1B61wqv53BqWpLo3wR6hTWyZgRAFskaiMe",
     "KT1WPM5LvxCCNmNZuHnYpYXnJeobWKPpruVy"
   ])
+  function refreshPage() {
+    window.location.reload();
+  }
 
   return (
     <div className="flex-col flex">
@@ -54,6 +57,7 @@ function App() {
                 <p className="mt-2 text-sm text-gray-700">
                   A list of Cohorts to be participated on.      
                 </p>
+                <button className='float-right' onClick={refreshPage}>Click to Reload</button>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ">
                         {contracts && userAddress ?

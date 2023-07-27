@@ -209,7 +209,7 @@ transition end_contributing (){                                                 
   }
 }
 
-transition disturbute() {                                                                   //distirbutes pot to receiver
+transition distirbute() {                                                                   //distirbutes pot to receiver
   called by admin
   state is Distirbuting
   require {
@@ -262,6 +262,7 @@ transition reset(){                                                             
       participant.remove(p);
     done;
     participants_count := 0;
+    contributors_count := 0;
     banned_count := 0;
     received_count := 0;
     end_time := none
