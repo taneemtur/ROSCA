@@ -60,11 +60,12 @@ const DistirbutedCard = (props:any) => {
         .catch((err) => console.log(err));
     }
     const continueRosca= async()=>{
+        console.log('me')
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
         .at(contractAddress)
-        .then((wallet) => contract.methods.restart().send())
+        .then((wallet) => contract.methods.continue().send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
             return op.confirmation();
@@ -115,7 +116,7 @@ const DistirbutedCard = (props:any) => {
                 {props.admin && userAddress && userAddress==props.admin?
                     (props.participants_count.toNumber()==props.received_count.toNumber())? 
                     <div className="pr-2 text-xl"><button onClick={restartRosca}>Restart Rosca</button></div>
-                    :<div className="pr-2 text-xl"><button onClick={contiuneRosca}>Continue Rosca</button></div>
+                    :<div className="pr-2 text-xl"><button onClick={continueRosca}>Continue Rosca</button></div>
                 :<div className="pr-2 text-xl"><button>x Not Joined</button></div>
                 }
             </div>
