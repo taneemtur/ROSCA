@@ -191,7 +191,7 @@ transition end_contributing (){                                                 
   state is Contributing
   require {
     is_paused_r5: is_not_paused() otherwise "Rosca is Paused";
-    end_contributing_r1: end_time ? now > the : false otherwise "Contibution finished";
+    end_contributing_r1: end_time ? now > the : false otherwise "Contibution not finished yet";
   }
   from Contributing to Distirbuting
   with effect{
@@ -270,14 +270,16 @@ transition reset(){                                                             
 }
 
 transition emergency_reset(){
-  fail if {
-    c4: participants_count>=1
+  require {
+    r1: contributors_count<1 otherwise "there are contributors";
+    r2: end_time ? now > the : false otherwise "Contibution not finished yet";
   }
   from (Collecting or Contributing or Distirbuting or Distirbuted) to Starting
   with effect{
     for p in participant do
       participant.remove(p);
     done;
+    participants_count := 0;
     banned_count := 0;
     received_count := 0;
     end_time := none;
@@ -288,7 +290,7 @@ transition emergency_reset(){
 
 entry changeAdmin(admin_address: address){
   require {
-    r: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
+    r1_change: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
     or admin_address = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu 
     or admin_address = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR
   }

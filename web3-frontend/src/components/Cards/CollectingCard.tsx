@@ -37,6 +37,21 @@ const CollectingCard = (props:any) => {
         getWalletPKH()
     }, [])
 
+    const isParticipant = ()=>{
+        let arr:Array<string> = []
+        props.participantsArray&& props.participantsArray.map((e:any)=>{
+            let address= e.address
+            let parsed = address && address.slice(1,address.length-1)
+            console.log(parsed)
+            arr.push(parsed)
+        })
+        var result = false
+        arr&& arr.forEach((e)=>{
+            if(e===userAddress) result = true
+            else result = false
+        })
+        return result
+    }
     
     const joinRosca = async()=>{
         const contract = await tezos.wallet.at(contractAddress)
