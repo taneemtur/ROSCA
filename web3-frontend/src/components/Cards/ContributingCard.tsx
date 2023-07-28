@@ -42,18 +42,25 @@ const ContributingCard = (props:any) => {
         props.participantsArray&& props.participantsArray.map((e:any)=>{
             let address= e.address
             let parsed = address && address.slice(1,address.length-1)
-            console.log(parsed)
             arr.push(parsed)
         })
         var result = false
         arr&& arr.forEach((e)=>{
             if(e===userAddress) result = true
-            else result = false
         })
         return result
     }
     const isContributed = ()=>{
-
+        let arr:Array<any> = []
+        props.participantsArray&& props.participantsArray.map((e:any)=>{
+            let address= e.values
+            address&&arr.push(address)
+        })
+        var result = false
+        arr&& arr.forEach((e)=>{ 
+            if(e.contributed) result = true
+        })
+        return result
     }
     const startDistirbuting= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
@@ -105,11 +112,17 @@ const ContributingCard = (props:any) => {
         })
         .catch((err) => console.log(err));
     } 
-    
+    // 2023-07-28T11:26:41.000Z
+    const formatEndtime = ()=>{
+        let formatted = props.end_time && props.end_time.Some.slice(0,10) + ' ' + props.end_time.Some.slice(11,19)
+        formatted && console.log(formatted)
+    }
+    console.log('endtime:',props.end_time.Some)
 
     return (
-    <div className='flex'>
+    <div className='flex'>        
         {props.owner && <div className='bg-[#EBEBEB] m-1 w-[380px] h-64  rounded-[48px] border border-black'> 
+        <button onClick={formatEndtime}>endttime</button>
            <div className='flex flex-row justify-between bg-[#09417D] w-full h-20 pr-6 pl-10 pt-4 rounded-t-[48px]'>
                 <div className="text-xl text-white">
                     <p>Rosca: {parseAddress(contractAddress)}</p>
@@ -139,12 +152,22 @@ const ContributingCard = (props:any) => {
             </div>
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
                 {props.admin && userAddress && userAddress==props.admin?
+
                 <div className="pr-2 text-xl flex">
                     <button onClick={startDistirbuting}>Start Distirbuting</button>
                      <div className='w-8'>|</div> 
-                     {isParticipant()?<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>X Not Joined</button></div>}
+                     {isParticipant()?
+                        isContributed()?
+                        <div className="pr-2 text-xl"><button disabled={true}>✔ Contributed</button></div>
+                        :<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
+                    :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >X Not Joined</button></div>}
                 </div>
-                :isParticipant()?<div className="pr-2 text-xl"><button>Already Contributed</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>
+                
+                :isParticipant()?
+                    isContributed()?
+                    <div className="pr-2 text-xl"><button disabled={true}>✔ Contributed</button></div>
+                    :<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
+                :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >X Not Joined</button></div>
                 }
             </div>
         </div>}
