@@ -59,7 +59,7 @@ const DistirbutedCard = (props:any) => {
         })
         .catch((err) => console.log(err));
     }
-    const contiuneRosca= async()=>{
+    const continueRosca= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
@@ -104,7 +104,7 @@ const DistirbutedCard = (props:any) => {
                 <div className='flex flex-row pb-2 justify-between'>
                     <div className="flex">
                         <div className="pt-1"><FaUsers/></div>
-                        <p className='pl-2'>{'Receiver: ' +props.receiver&&props.receiver}</p>
+                        {props.receiver&&<p className='pl-2'>{'Rec: '+parseAddress(props.receiver.Some)}</p>}
                     </div>
                     <div className="">
                         <p>{'Left: ' }</p>

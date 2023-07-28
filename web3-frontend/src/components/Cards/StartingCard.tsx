@@ -13,6 +13,7 @@ const StartingCard = (props:any) => {
     const network = useNetwork()
 
     const [userAddress,setUserAddress] = useState("")
+   
 
     const parseAddress =(address:string)=>{
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
@@ -57,9 +58,10 @@ const StartingCard = (props:any) => {
             console.log('An error has occurred');
             }
         })
-        .catch((err) => console.log(err));
+        .then(()=>{props.setRefresh(props.refresh+1)}).catch((err) => console.log(err));
+        
     }
- 
+        
     return (
     <div className='flex'>
         {props.owner && <div className='bg-[#EBEBEB] m-1 w-[380px] h-64  rounded-[48px] border border-black'> 

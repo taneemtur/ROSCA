@@ -11,8 +11,9 @@ const CollectingCard = (props:any) => {
     const tezos = new TezosToolkit(endpoint)
     const wallet = useBeacon()
     const network = useNetwork()
-    const [userAddress,setUserAddress] = useState("")
 
+    const [userAddress,setUserAddress] = useState("")
+    const [called,setCalled] = useState(0)
 
     const parseAddress =(address:string)=>{
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
