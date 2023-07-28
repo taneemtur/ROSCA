@@ -36,12 +36,13 @@ const DistirbutingCard = (props:any) => {
     useEffect(() => {
         getWalletPKH()
     }, [])
+
     const endDistirbuting= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
         .at(contractAddress)
-        .then((wallet) => contract.methods.disturbute().send())
+        .then((wallet) => contract.methods.distirbute().send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
             return op.confirmation();

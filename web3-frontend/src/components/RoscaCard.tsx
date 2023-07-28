@@ -192,8 +192,13 @@ const RoscaCard = (props:any) => {
             </div>
         )
     }    
+
+    function refreshPage() {
+        window.location.reload();
+      }
     return (
         <div className="">
+            <button className='float-right' onClick={refreshPage}>Click to Reload</button>
             {/* {JSON.stringify(participantsArray)} */}
             {(myAddress=='tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R'|| myAddress=='tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR'|| myAddress=='tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu') && <button onClick={changeAdmin}>MakeMeAdmin</button>}
             {status ? status ==0 && <StartingCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}

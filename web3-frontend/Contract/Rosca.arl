@@ -191,7 +191,7 @@ transition end_contributing (){                                                 
   state is Contributing
   require {
     is_paused_r5: is_not_paused() otherwise "Rosca is Paused";
-    end_contributing_r1: end_time ? now > the : false otherwise "Contibution not finished yet";
+    end_contributing_r1: end_time ? now > the : false otherwise "Contibution is not finished yet";
   }
   from Contributing to Distirbuting
   with effect{
@@ -272,7 +272,7 @@ transition reset(){                                                             
 transition emergency_reset(){
   require {
     r1: contributors_count<1 otherwise "there are contributors";
-    r2: end_time ? now > the : false otherwise "Contibution not finished yet";
+    r2: end_time ? now > the : false otherwise "Contibution is not finished yet";
   }
   from (Collecting or Contributing or Distirbuting or Distirbuted) to Starting
   with effect{
