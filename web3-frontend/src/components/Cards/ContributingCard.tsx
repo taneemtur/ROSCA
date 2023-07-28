@@ -52,6 +52,9 @@ const ContributingCard = (props:any) => {
         })
         return result
     }
+    const isContributed = ()=>{
+
+    }
     const startDistirbuting= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
@@ -75,7 +78,7 @@ const ContributingCard = (props:any) => {
         .catch((err) => console.log(err));
     } 
     const calculateAmount=()=>{
-       var amount = props.rosca_total /props.max_participants.toNumber()
+       var amount = props.rosca_total /props.participants_count.toNumber()
        console.log(amount)
        return amount
     }
@@ -137,9 +140,9 @@ const ContributingCard = (props:any) => {
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
                 {props.admin && userAddress && userAddress==props.admin?
                 <div className="pr-2 text-xl flex">
-                    <button onClick={startDistirbuting}>Start Distirbuting </button>
+                    <button onClick={startDistirbuting}>Start Distirbuting</button>
                      <div className='w-8'>|</div> 
-                     {isParticipant()?<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>}
+                     {isParticipant()?<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>X Not Joined</button></div>}
                 </div>
                 :isParticipant()?<div className="pr-2 text-xl"><button>Already Contributed</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>ꜩ Contribute</button></div>
                 }

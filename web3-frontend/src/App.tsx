@@ -9,11 +9,11 @@ import { useBeacon, useWalletAddress } from './contexts/Beacon';
 function App() {
   const userAddress = useWalletAddress()
   const [contracts, setContracts] = useState([
-    "KT1NdFnFYViDagZsU3WBgvcY4J2zMTvJX1ZP",
-    "KT1Gfn8PrRuKYYrTVCJSxqF1x2LC9Lzap94Q",
-    "KT1T8Cx1oTQ7rRGDNij4qnrCiTkGFNeGnd3A",
-    "KT1B61wqv53BqWpLo3wR6hTWyZgRAFskaiMe",
-    "KT1WPM5LvxCCNmNZuHnYpYXnJeobWKPpruVy"
+    "KT18be2W9UMnEQ6irroT7bSnEbuvrZVvc8Zf",
+    "KT1X96iFLQY2sq5QE5To264pW662u6C1Lr2m",
+    "KT1XaqY7e4k9mwd4cR4ocMKdPgsywhTsFc9j",
+    "KT1MLYcBRhuxXpyErdhjWL2wjyfEYoxFoGxv",
+    "KT1DzmrRBcLMop7zurDx4aE9cWdESyvpZpxF"
   ])
   function refreshPage() {
     window.location.reload();

@@ -25,9 +25,8 @@ const RoscaCard = (props:any) => {
         address: null,
         values:null,
     }])
+    const [refresh,setRefresh] = useState(0)
 
-    
-    
     const [{owner,rosca_total,contributing_duration,
         max_participants,status,participant,paused,pot,participants_count,
         contributors_count,banned_count,received_count,end_time,receiver,admin},setData] = useState<any>(()=>({
@@ -192,15 +191,18 @@ const RoscaCard = (props:any) => {
             </div>
         )
     }    
+    // useEffect(() => {
+    //   loadStorage()
+    // }, [refresh])
+    
     return (
         <div className="">
-            {/* {JSON.stringify(participantsArray)} */}
             {(myAddress=='tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R'|| myAddress=='tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR'|| myAddress=='tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu') && <button onClick={changeAdmin}>MakeMeAdmin</button>}
-            {status ? status ==0 && <StartingCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==1 && <CollectingCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==2 && <ContributingCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray}/>: <Loading/>}
-            {status ? status ==3 && <DistirbutingCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count}/>: <Loading/>}
-            {status ? status ==4 && <DistirbutedCard contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} received_count={received_count}/>: <Loading/>}
+            {status ? status ==0 && <StartingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
+            {status ? status ==1 && <CollectingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
+            {status ? status ==2 && <ContributingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray}/>: <Loading/>}
+            {status ? status ==3 && <DistirbutingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/> : <Loading/>}
+            {status ? status ==4 && <DistirbutedCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} received_count={received_count} receiver={receiver}/>: <Loading/>}
             {participantsArray&& participantsArray.map((e,i)=>{
                 return(
                     <p>{`Participantf ${i+1} : `+ e.address&&e.address}</p>

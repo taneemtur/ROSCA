@@ -36,12 +36,13 @@ const DistirbutingCard = (props:any) => {
     useEffect(() => {
         getWalletPKH()
     }, [])
+
     const endDistirbuting= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
         .at(contractAddress)
-        .then((wallet) => contract.methods.disturbute().send())
+        .then((wallet) => contract.methods.distirbute().send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
             return op.confirmation();
@@ -77,9 +78,15 @@ const DistirbutingCard = (props:any) => {
                     <div className="pt-1"><FaCoins/></div>
                     <p className='pl-2'>{props.pot.toNumber()/1000000} ꜩ</p>
                 </div>
-                <div className='flex flex-row pb-2'>
-                    <div className="pt-1"><FaUsers/></div>
-                    <p className='pl-2'>{'👱 '+props.participants_count.toNumber()} / {'🚫 ' +props.banned_count.toNumber()}</p>
+                <div className='flex flex-row pb-2 justify-between'>
+                    <div className="flex">
+                        <div className="pt-1"><FaUsers/></div>
+                        <p className='pl-2'>{'👱 '+props.participants_count.toNumber()} / {'🚫 ' +props.banned_count.toNumber()}</p>
+                    </div> 
+                    <div className="flex flex-row justify-between">
+                        {console.log(props.receiver.Some)}
+                        {props.receiver&&<p className='pl-2'>{'Rec: '+parseAddress(props.receiver.Some)}</p>}
+                    </div>
                 </div>
             </div>
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
