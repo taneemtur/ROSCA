@@ -43,17 +43,15 @@ const CollectingCard = (props:any) => {
         props.participantsArray&& props.participantsArray.map((e:any)=>{
             let address= e.address
             let parsed = address && address.slice(1,address.length-1)
-            console.log(parsed)
             arr.push(parsed)
         })
         var result = false
         arr&& arr.forEach((e)=>{
             if(e===userAddress) result = true
-            else result = false
         })
         return result
     }
-    
+
     const joinRosca = async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
@@ -98,6 +96,10 @@ const CollectingCard = (props:any) => {
         })
         .catch((err) => console.log(err));
     } 
+    useEffect(() => {
+     isParticipant()
+    }, [userAddress])
+    
  
     return (
     <div className='flex'>
@@ -124,14 +126,29 @@ const CollectingCard = (props:any) => {
                 </div>
             </div>
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
-                {props.admin && userAddress && userAddress==props.admin?
+                {/* {props.admin && userAddress && userAddress==props.admin?
                 <div className="pr-2 text-xl flex">
                     <button onClick={startContributing}>Start Contributing</button>
                      <div className='w-8'>|</div> 
                     <button onClick={joinRosca}>+ Join Rosca</button>
                 </div>
                 :<div className="pr-2 text-xl"><button onClick={joinRosca}>+ Join Rosca</button></div>
-                }
+                } */}
+                {props.admin && userAddress && userAddress==props.admin?
+                <div className="pr-2 text-xl flex">
+                    <button onClick={startContributing}>Start Contributing</button>
+                    <div className='w-8'>|</div> 
+                    {isParticipant()?
+                        <div className="pr-2 text-xl"><button disabled={true}>✔ Joined</button></div>
+                        :<div className="pr-2 text-xl"><button onClick={joinRosca}>+ Join Rosca</button></div>
+                    }
+                </div>:
+                <div>
+                    {isParticipant()?
+                        <div className="pr-2 text-xl"><button disabled={true}>✔ Joined</button></div>
+                        :<div className="pr-2 text-xl"><button onClick={joinRosca}>+ Join Rosca</button></div>
+                    }
+                </div>}
             </div>
         </div>}
     </div>

@@ -14,7 +14,6 @@ const StartingCard = (props:any) => {
 
     const [userAddress,setUserAddress] = useState("")
    
-
     const parseAddress =(address:string)=>{
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
         return parsed

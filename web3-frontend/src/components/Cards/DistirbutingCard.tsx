@@ -84,7 +84,7 @@ const DistirbutingCard = (props:any) => {
                         <p className='pl-2'>{'👱 '+props.participants_count.toNumber()} / {'🚫 ' +props.banned_count.toNumber()}</p>
                     </div> 
                     <div className="flex flex-row justify-between">
-                        {console.log(props.receiver.Some)}
+                        {props.receiver&& console.log(props.receiver.Some)}
                         {props.receiver&&<p className='pl-2'>{'Rec: '+parseAddress(props.receiver.Some)}</p>}
                     </div>
                 </div>

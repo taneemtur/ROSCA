@@ -1,0 +1,44 @@
+archetype contracts
+
+event ContractAdded{
+  new_contract : address;
+  admin : address;
+}
+event ContractDeleted{
+  ex_contract : address;
+}
+
+// Storage --------------------------------------------------------------------------------------------------------
+asset contracts identified by c_address{
+    c_address: address;
+    deployer: address;
+}
+
+variable contracts_count: nat = 0
+
+// Entrypoints --------------------------------------------------------------------------------------------------
+entry addContract(cAddress : address){
+    require {
+        r1: caller = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR or caller = tz1e84UEfuHENrVBqXK3ZazafqRqJoPsPZHA 
+        or caller = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu or caller = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
+        otherwise "You do not have access"
+    }
+    effect{
+    contracts_count += 1;
+    contracts.add({c_address = cAddress; deployer=caller});
+    emit<ContractAdded>({cAddress; caller})
+  }
+}
+
+entry deleteContract(cAddress : address){
+    require {
+        r2: caller = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR or caller = tz1e84UEfuHENrVBqXK3ZazafqRqJoPsPZHA 
+        or caller = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu or caller = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
+        otherwise "You do not have access"
+    }
+    effect{
+    contracts_count -= 1;
+    contracts.remove(cAddress);
+    emit<ContractDeleted>({cAddress})
+  }
+}

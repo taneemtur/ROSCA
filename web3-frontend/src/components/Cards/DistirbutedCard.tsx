@@ -108,7 +108,7 @@ const DistirbutedCard = (props:any) => {
                         {props.receiver&&<p className='pl-2'>{'Rec: '+parseAddress(props.receiver.Some)}</p>}
                     </div>
                     <div className="">
-                        <p>{'Left: ' }</p>
+                        <p>{`Left : ${props.contributors_count - props.received_count}`}</p>
                     </div>
                 </div>
             </div>

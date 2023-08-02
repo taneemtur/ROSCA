@@ -75,14 +75,34 @@ const RoscaCard = (props:any) => {
 
     useEffect(()=>{
         const parsed = participant && Object.fromEntries(participant.valueMap) 
-        parsed && console.log('aaaa', Object.keys(parsed)[0],Object.values(parsed)[0])
+
+        const keys = participant && Object.values(participant)[0]
+        keys&& console.log(keys)
+        const keyArr = keys && Array.from(keys.values())
+        keyArr && console.log(keyArr[0]) 
+
+        // keyArr && keyArr.forEach((e:any) => {
+        //     console.log(e.slice(1,e.length-1))
+        // });
+
+        const values = participant && Object.values(participant)[0]
+        const valueArr = values && Array.from(values.keys())
+        valueArr && console.log(valueArr)
+        valueArr && valueArr.forEach((e:any) => {
+            console.log(e.slice(1,e.length-1))
+        });
+        // participant && console.log("participans:", Object.values(participant)[0])
+        // parsed && console.log('aaaa', Array.from(parsed))
         const length = participant && participant.valueMap.size
-        length&& console.log(length)
+        // length&& console.log(length) 
          if(length){
             for(let i=0;i<length;i++){
-                let participantObject = parsed && {address:Object.keys(parsed)[i], values: Object.values(parsed)[i]}
+                let participantObject = parsed && keyArr&&{address:valueArr[i].slice(1,valueArr[i].length-1), values: keyArr[i]}
                 participantObject && console.log('part',participantObject)
-                 setParticipantsArray(participantsArray=>[...participantsArray,participantObject])
+                if(participantObject && participantsArray.filter(val=> val==participantObject))console.log("include") 
+                else{
+                    setParticipantsArray(participantsArray=>[...participantsArray,participantObject])  
+                } 
             }
          }
     },[participant])
@@ -91,29 +111,6 @@ const RoscaCard = (props:any) => {
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
         return parsed
     }
-
-    const startContributing = async()=>{
-        const contract = await tezos.wallet.at(contractAddress)
-        wallet && setTezosProvider()  
-        wallet && tezos.wallet
-        .at(contractAddress)
-        .then((wallet) => contract.methods.start_contributing().send())
-        .then((op) => {
-            console.log(`Hash: ${op.opHash}`);
-            return op.confirmation();
-        })
-        .then((result) => {
-            console.log(result);
-            if (result&&result.completed) {
-            console.log(`Transaction correctly processed!
-            Block: ${result.block.header.level}
-            Chain ID: ${result.block.chain_id}`);
-            } else {
-            console.log('An error has occurred');
-            }
-        })
-        .catch((err) => console.log(err));
-    } 
 
     const getStatus = async()=>{
         const contract = await tezos.wallet.at(contractAddress)
@@ -199,15 +196,10 @@ const RoscaCard = (props:any) => {
         <div className="">
             {(myAddress=='tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R'|| myAddress=='tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR'|| myAddress=='tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu') && <button onClick={changeAdmin}>MakeMeAdmin</button>}
             {status ? status ==0 && <StartingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==1 && <CollectingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
+            {status ? status ==1 && <CollectingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} participantsArray={participantsArray} />: <Loading/>}
             {status ? status ==2 && <ContributingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time}/>: <Loading/>}
             {status ? status ==3 && <DistirbutingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/> : <Loading/>}
-            {status ? status ==4 && <DistirbutedCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} received_count={received_count} receiver={receiver}/>: <Loading/>}
-            {participantsArray&& participantsArray.map((e,i)=>{
-                return(
-                    <p>{`Participantf ${i+1} : `+ e.address&&e.address}</p>
-                )
-            })}
+            {status ? status ==4 && <DistirbutedCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} contributors_count={contributors_count}  received_count={received_count} receiver={receiver}/>: <Loading/>}
         </div>
     )
 }

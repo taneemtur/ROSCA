@@ -6,13 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import { BeaconProvider } from './contexts/Beacon'
 import { SettingsProvider} from './contexts/Settings';
 import { TaquitoProvider } from './contexts/Taquito';
+import { ContractsProvider } from './contexts/Contracts';
 
 ReactDOM.render(
   <React.StrictMode>
     <SettingsProvider>
       <TaquitoProvider>
         <BeaconProvider>
-          <App />
+          <ContractsProvider>
+            <App />
+          </ContractsProvider>
         </BeaconProvider>
       </TaquitoProvider>
     </SettingsProvider>
