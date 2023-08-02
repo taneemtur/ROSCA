@@ -41,6 +41,7 @@ const OriginateRosca = () => {
           console.log(`Transaction correctly processed!
           Block: ${result.block.header.level}
           Chain ID: ${result.block.chain_id}`);
+          setInterval(()=>{refreshPage()},2000)
           } else {
           console.log('An error has occurred');
           }
@@ -63,6 +64,10 @@ const OriginateRosca = () => {
         console.log(`Contract deployed at: https://better-call.dev/${network}/${contract.address}`)
         addContract(contract.address)
       }).catch(error => console.log(`Error: ${JSON.stringify(error, null, 2)}`));
+    }
+
+    function refreshPage() {
+      window.location.reload();
     }
 
   return (
