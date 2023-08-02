@@ -7,17 +7,18 @@ import { useBeacon, useWalletAddress } from './contexts/Beacon';
 import OriginateRosca from './components/OriginateRosca';
 import { useEndpoint, useNetwork } from './contexts/Settings';
 import { TezosToolkit } from '@taquito/taquito';
-import { useContract } from './contexts/Contracts';
-import Test from './components/TrustedAddresses';
+import { useAdmins, useContract } from './contexts/Contracts';
+import TrustedAddresses from './components/TrustedAddresses';
  
 
 function App() {
-  const userAddress = useWalletAddress()
+  const walletAddress = useWalletAddress()
   const endpoint = useEndpoint()
   const tezos = new TezosToolkit(endpoint)
   const wallet = useBeacon()
   const network = useNetwork()
   const roscaContracts = useContract()
+  const admins = useAdmins()
 
 
   function refreshPage() {
@@ -64,9 +65,11 @@ function App() {
                 </p>
                 <button className='float-right' onClick={refreshPage}>Click to Reload</button>
                     <div
-                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ">
-                        <OriginateRosca/>
-                        {roscaContracts && roscaContracts.length>0 && userAddress ? 
+                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
+                        {admins && admins.includes(walletAddress) && <div className='text-start'>
+                           <OriginateRosca/>
+                          </div>}
+                        {roscaContracts && roscaContracts.length>0 && walletAddress ? 
                         <div className="flex flex-row flex-wrap">
                           {roscaContracts&& console.log(roscaContracts)}
                           {roscaContracts.map((c:any)=>{
@@ -79,7 +82,7 @@ function App() {
                         </div>
                         }
                     </div>
-                    <Test/>
+                    <TrustedAddresses/>
               </div>
             </div>
           </div>

@@ -23,8 +23,7 @@ const OriginateRosca = () => {
       } catch (error) {
           console.log(error)  
       }
-      
-  }
+    }
     const addContract = async(contractAddress:string)=>{
       const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
       wallet && setTezosProvider()  
@@ -47,7 +46,7 @@ const OriginateRosca = () => {
           }
       })
       .catch((err) => console.log(err));
-  }
+    }
 
     const originate = async () =>{
         wallet && await wallet.requestPermissions({ network: {type:network} })
