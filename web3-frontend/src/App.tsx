@@ -8,6 +8,7 @@ import OriginateRosca from './components/OriginateRosca';
 import { useEndpoint, useNetwork } from './contexts/Settings';
 import { TezosToolkit } from '@taquito/taquito';
 import { useContract } from './contexts/Contracts';
+import Test from './components/TrustedAddresses';
  
 
 function App() {
@@ -17,39 +18,6 @@ function App() {
   const wallet = useBeacon()
   const network = useNetwork()
   const roscaContracts = useContract()
-
-  // const [roscaContracts, setRoscaContracts] = useState<any>([]) 
-
-  // const [{contracts,contracts_count},setData] = useState<any>(()=>({
-  //   contracts:null,
-  //   contracts_count:null,      
-  // }))
-
-  // const loadContracts=async()=>{
-  //   const contract = await tezos.contract.at("KT1QccuR2EPRxcwH6ZaST7n36EtqJcYKR6oT")
-  //   const contractStorage: any = await contract.storage()
-  //   setData({
-  //     contracts:contractStorage.contracts,
-  //     contracts_count:contractStorage.contracts_count, 
-  //   })
-  // }
-
-  // useEffect(() => {
-  //   loadContracts()
-  // }, [])
-
-  // useEffect(()=>{
-  //   const values = contracts && Object.values(contracts)[0]  
-  //   const keys = values && Array.from(values.keys())
-  //   let cArray: any[] = keys&&[]
-  //   keys && keys.forEach((e:any) => { 
-  //     cArray.push(e.slice(1,e.length-1))
-  //   });
-  //   cArray && localStorage.setItem('contracts', JSON.stringify(cArray))
-  //   var res = localStorage.getItem('contracts')
-  //   res && setRoscaContracts(res)
-  //   console.log(roscaContracts)
-  // },[contracts])
 
 
   function refreshPage() {
@@ -98,9 +66,9 @@ function App() {
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ">
                         <OriginateRosca/>
-                        {console.log(roscaContracts)} 
-                        {roscaContracts && userAddress ? 
+                        {roscaContracts && roscaContracts.length>0 && userAddress ? 
                         <div className="flex flex-row flex-wrap">
+                          {roscaContracts&& console.log(roscaContracts)}
                           {roscaContracts.map((c:any)=>{
                           return <RoscaCard contract={c}/>
                           })}
@@ -111,6 +79,7 @@ function App() {
                         </div>
                         }
                     </div>
+                    <Test/>
               </div>
             </div>
           </div>

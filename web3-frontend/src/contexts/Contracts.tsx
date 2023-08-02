@@ -1,3 +1,5 @@
+// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1QccuR2EPRxcwH6ZaST7n36EtqJcYKR6oT
+
 import { useEffect, useState } from "react"
 import { useBeacon, useWalletAddress } from "./Beacon"
 import { useEndpoint, useNetwork } from "./Settings"
@@ -6,10 +8,12 @@ import constate from "constate";
 
 export const [
     ContractsProvider,
-    useContract
+    useContract,
+    useAdmins,
 ]= constate(
     SetContracts,
-    (v) => v.roscaContracts
+    (v) => v.roscaContracts,
+    (v) => v.trustedAddresses
 )
 
 function SetContracts(){
@@ -17,27 +21,39 @@ function SetContracts(){
     const tezos = new TezosToolkit(endpoint)
 
     const [roscaContracts, setRoscaContracts] = useState<any>([]) 
+    const [trustedAddresses, setTrustedAddresses] = useState<any>([]) 
 
 
-    const [{contracts},setData] = useState<any>(()=>({
+    const [{contracts,admins},setData] = useState<any>(()=>({
         contracts:null,   
+        admins:null,   
     }))
     
     const loadContracts=async()=>{
-        const contract = await tezos.contract.at("KT1QccuR2EPRxcwH6ZaST7n36EtqJcYKR6oT")
+        const contract = await tezos.contract.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
         const contractStorage: any = await contract.storage()
         setData({
         contracts:contractStorage.contracts,
-        contracts_count:contractStorage.contracts_count, 
+        admins:contractStorage.admins,
         })
     }
+    
+    useEffect(() => {
+      setInterval(()=>{loadContracts()},8000)
+    }, [])
     
     useEffect(() => {
         if(localStorage.getItem('contracts')) {
             let raw = localStorage.getItem('contracts')
             raw && setRoscaContracts(JSON.parse(raw))
         }
-        loadContracts()
+    }, [])
+
+    useEffect(() => {
+        if(localStorage.getItem('admins')) {
+            let raw = localStorage.getItem('contracts')
+            raw && setRoscaContracts(JSON.parse(raw))
+        }
     }, [])
 
     useEffect(()=>{
@@ -54,5 +70,20 @@ function SetContracts(){
         parsed && setRoscaContracts(parsed)
         parsed && console.log(parsed)
     },[contracts])
-    return {roscaContracts}
+
+    useEffect(()=>{
+
+        const values = admins && Object.values(admins)
+        values && console.log(values)
+        let aArray: any[] = values&&[]
+        values && values.forEach((e:any) => { 
+          aArray.push(e)
+        });
+        aArray && localStorage.setItem('admins', JSON.stringify(aArray))
+        let res = localStorage.getItem('admins')
+        let parsed = res && JSON.parse(res)
+        parsed && setTrustedAddresses(parsed)
+        parsed && console.log(parsed)
+    },[admins])
+    return {roscaContracts,trustedAddresses}
 }

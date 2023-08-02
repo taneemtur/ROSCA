@@ -1,4 +1,5 @@
-archetype contracts
+// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y
+archetype contracts(owner: address)
 
 event ContractAdded{
   new_contract : address;
@@ -7,11 +8,13 @@ event ContractAdded{
 event ContractDeleted{
   ex_contract : address;
 }
-
 // Storage --------------------------------------------------------------------------------------------------------
 asset contracts identified by c_address{
     c_address: address;
     deployer: address;
+}
+asset admins{
+    a_address: address;
 }
 
 variable contracts_count: nat = 0
@@ -19,9 +22,7 @@ variable contracts_count: nat = 0
 // Entrypoints --------------------------------------------------------------------------------------------------
 entry addContract(cAddress : address){
     require {
-        r1: caller = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR or caller = tz1e84UEfuHENrVBqXK3ZazafqRqJoPsPZHA 
-        or caller = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu or caller = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
-        otherwise "You do not have access"
+        r1: admins.contains(caller) otherwise "You do not have access"
     }
     effect{
     contracts_count += 1;
@@ -32,13 +33,24 @@ entry addContract(cAddress : address){
 
 entry deleteContract(cAddress : address){
     require {
-        r2: caller = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR or caller = tz1e84UEfuHENrVBqXK3ZazafqRqJoPsPZHA 
-        or caller = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu or caller = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
-        otherwise "You do not have access"
+        r2: admins.contains(caller) otherwise "You do not have access"
     }
     effect{
     contracts_count -= 1;
     contracts.remove(cAddress);
     emit<ContractDeleted>({cAddress})
   }
+}
+
+entry addAdmin(new_admin: address){
+   called by owner
+   effect{
+    admins.add({a_address = new_admin})
+   } 
+}
+entry deleteAdmin(ex_admin: address){
+   called by owner
+   effect{
+    admins.remove(ex_admin)
+   } 
 }
