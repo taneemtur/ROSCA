@@ -43,7 +43,8 @@ function calculate_amount(): tez{                                               
 }
 
 //Pausable ---------------------------------------------------------------------
-entry pause() {                                                                            //pauses the rosca process
+entry pause() { 
+  called by admin                                                                           //pauses the rosca process
   require {
     pausable_r1: is_not_paused() otherwise "ALREADY PAUSED"
   }
@@ -53,7 +54,8 @@ entry pause() {                                                                 
   }
 }
 
-entry unpause() {                                                                         //resumes the rosca process
+entry unpause() {
+  called by admin                                                                         //resumes the rosca process
   require {
     pausable_r2: paused otherwise "CONTRACT_NOT_PAUSED"
   }
@@ -240,6 +242,7 @@ transition continue() {                                                         
       contributed = false
     });
     done;
+    end_time := some((now+contributing_duration));
     contributors_count := 0;
   }
 }

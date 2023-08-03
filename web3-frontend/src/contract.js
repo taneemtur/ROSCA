@@ -983,6 +983,27 @@ export const code =
                                     },
                                     {  "prim": "DUP",
                                        "args": [
+                                         {  "int": "19"  }
+                                       ]
+                                    },
+                                    {  "prim": "SENDER"  },
+                                    {  "prim": "COMPARE"  },
+                                    {  "prim": "EQ"  },
+                                    {  "prim": "NOT"  },
+                                    {  "prim": "IF",
+                                       "args": [
+                                         [  {  "prim": "PUSH",
+                                               "args": [
+                                                 {  "prim": "string"  },
+                                                 {  "string": "INVALID_CALLER"  }
+                                               ]
+                                         },
+                                         {  "prim": "FAILWITH"  }  ],
+                                         [    ]
+                                       ]
+                                    },
+                                    {  "prim": "DUP",
+                                       "args": [
                                          {  "int": "25"  }
                                        ]
                                     },
@@ -1098,6 +1119,27 @@ export const code =
                                           "args": [
                                             {  "int": "1"  }
                                           ]
+                                    },
+                                    {  "prim": "DUP",
+                                       "args": [
+                                         {  "int": "19"  }
+                                       ]
+                                    },
+                                    {  "prim": "SENDER"  },
+                                    {  "prim": "COMPARE"  },
+                                    {  "prim": "EQ"  },
+                                    {  "prim": "NOT"  },
+                                    {  "prim": "IF",
+                                       "args": [
+                                         [  {  "prim": "PUSH",
+                                               "args": [
+                                                 {  "prim": "string"  },
+                                                 {  "string": "INVALID_CALLER"  }
+                                               ]
+                                         },
+                                         {  "prim": "FAILWITH"  }  ],
+                                         [    ]
+                                       ]
                                     },
                                     {  "prim": "DUP",
                                        "args": [
@@ -3628,6 +3670,34 @@ export const code =
                                                    {  "int": "2"  }
                                                  ]
                                               }  ]
+                                            ]
+                                         },
+                                         {  "prim": "DUP",
+                                            "args": [
+                                              {  "int": "10"  }
+                                            ]
+                                         },
+                                         {  "prim": "NOW"  },
+                                         {  "prim": "ADD"  },
+                                         {  "prim": "SOME"  },
+                                         {  "prim": "DIP",
+                                            "args": [
+                                              {  "int": "1"  },
+                                              [  {  "prim": "DIG",
+                                                    "args": [
+                                                      {  "int": "17"  }
+                                                    ]
+                                              },
+                                              {  "prim": "DROP",
+                                                 "args": [
+                                                   {  "int": "1"  }
+                                                 ]
+                                              }  ]
+                                            ]
+                                         },
+                                         {  "prim": "DUG",
+                                            "args": [
+                                              {  "int": "17"  }
                                             ]
                                          },
                                          {  "prim": "PUSH",
