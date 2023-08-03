@@ -1,8 +1,7 @@
-// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1QccuR2EPRxcwH6ZaST7n36EtqJcYKR6oT
+// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y
 
 import { useEffect, useState } from "react"
-import { useBeacon, useWalletAddress } from "./Beacon"
-import { useEndpoint, useNetwork } from "./Settings"
+import { useEndpoint} from "./Settings"
 import { TezosToolkit } from "@taquito/taquito"
 import constate from "constate";
 
@@ -39,7 +38,7 @@ function SetContracts(){
     }
     
     useEffect(() => {
-      setInterval(()=>{loadContracts()},8000)
+      loadContracts()
     }, [])
     
     useEffect(() => {

@@ -87,17 +87,17 @@ const RoscaCard = (props:any) => {
         valueArr && console.log(valueArr)
         valueArr && valueArr.forEach((e:any) => {
             console.log(e.slice(1,e.length-1))
-        });
+        }); 
         const length = participant && participant.valueMap.size
-         if(length){
-            for(let i=0;i<length;i++){
+        const myArr = participant&& []
+         if(length){    
+            for(let i=0;i<length;i++){  
                 let participantObject = keyArr&&{address:valueArr[i].slice(1,valueArr[i].length-1), values: keyArr[i]}
-                participantObject && console.log('part',participantObject)
-                if(participantObject && participantsArray.filter(val=> val==participantObject))console.log("include") 
-                else{
-                    setParticipantsArray(participantsArray=>[...participantsArray,participantObject])  
-                } 
+                participantObject && console.log('part',participantObject) 
+                myArr.push(participantObject)
             }
+            console.log(myArr)
+            myArr&& setParticipantsArray(myArr)
          }
     },[participant])
 
@@ -186,10 +186,11 @@ const RoscaCard = (props:any) => {
                     {end_time &&<p>Contribution Ending: {JSON.stringify(end_time)}</p>}
                     <p>Current Receiver: {receiver}</p>
                     <p>Admin: {parseAddress(admin)}</p>
-                    {participantsArray && participantsArray.map((e:any,i:number)=>{ 
+                    {participantsArray && participantsArray.map((e:any,i:number)=>{
+                        console.log(e.address)
                         return (
                             <div className="">
-                                {e.address ? 
+                                {participants_count > 0 ? 
                                 <p>{i} - {parseAddress(JSON.stringify(e.address))}</p>
                                 :<p>Doesnt have any participants yet</p> }
                             </div>
