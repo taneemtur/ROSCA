@@ -60,15 +60,15 @@ function App() {
             <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">
                 <h1 className="text-xl font-semibold text-gray-900">Cohorts</h1>
-                <p className="mt-2 text-sm text-gray-700">
-                  A list of Cohorts to be participated on.      
-                </p>
-                <button className='float-right' onClick={refreshPage}>Click to Reload</button>
+                <div className='flex justify-between'>
+                  <p className="mt-2 text-sm text-gray-700">A list of Cohorts to be participated on.</p>
+                  {admins && admins.includes(walletAddress) && 
+                      <OriginateRosca/>
+                  }
+
+                </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
-                        {admins && admins.includes(walletAddress) && <div className='text-start'>
-                           <OriginateRosca/>
-                          </div>}
                         {roscaContracts && roscaContracts.length>0 && walletAddress ? 
                         <div className="flex flex-row flex-wrap">
                           {roscaContracts&& console.log(roscaContracts)}

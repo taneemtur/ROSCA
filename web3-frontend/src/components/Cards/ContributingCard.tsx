@@ -1,18 +1,18 @@
 import { TezosToolkit } from '@taquito/taquito'
-import React from 'react'
 import { useState, useEffect } from 'react'
 import {  useEndpoint, useNetwork } from '../../contexts/Settings'
-import {FaCoins, FaUserTie, FaUsers} from 'react-icons/fa'
-import { useBeacon } from '../../contexts/Beacon'
+import { FaCoins, FaUserTie, FaUsers } from 'react-icons/fa'
+import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 import CountdownTimer from '../CountdownTimer'
 
 const ContributingCard = (props:any) => {
+    const walletAddress = useWalletAddress()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
     const tezos = new TezosToolkit(endpoint)
     const wallet = useBeacon()
     const network = useNetwork()
-    const [userAddress,setUserAddress] = useState("")
+
     const [countdown, setCountdown] = useState<any>(null)
 
     const parseAddress =(address:string)=>{
@@ -30,14 +30,6 @@ const ContributingCard = (props:any) => {
         }
         
     }
-    const getWalletPKH =async () => {
-        const userAddress = wallet && await wallet.getPKH()
-        userAddress && setUserAddress(userAddress)
-    }
-    useEffect(() => {
-      getWalletPKH()
-     
-    }, [])
 
     const isParticipant = ()=>{
         let arr:Array<string> = []
@@ -61,7 +53,7 @@ const ContributingCard = (props:any) => {
         })
         var result = false
         arr&& arr.forEach((e)=>{ 
-            if(e===userAddress && e.contributed) result = true
+            if(e===walletAddress && e.contributed) result = true
         })
         return result
     }
@@ -81,6 +73,7 @@ const ContributingCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
+            props.loadStorage()
             } else {
             console.log('An error has occurred');
             }
@@ -109,13 +102,13 @@ const ContributingCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
+            props.loadStorage()
             } else {
             console.log('An error has occurred');
             }
         })
         .catch((err) => console.log(err));
     } 
-    // 2023-07-28T11:26:41.000Z
     function formatEndtime() {
         let formatted = props.end_time && (props.end_time.Some.slice(5,7) + '/' + props.end_time.Some.slice(8,10) + '/' + props.end_time.Some.slice(0,4) + ' ' + props.end_time.Some.slice(11,19))
         let date1 =  new Date(formatted)
@@ -162,7 +155,7 @@ const ContributingCard = (props:any) => {
                 </div>
             </div>
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
-                {props.admin && userAddress && userAddress==props.admin?
+                {props.admin && walletAddress && walletAddress==props.admin?
 
                 <div className="pr-2 text-xl flex">
                     <button onClick={startDistirbuting}>Start Distirbuting</button>

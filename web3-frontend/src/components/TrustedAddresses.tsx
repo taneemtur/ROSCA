@@ -70,7 +70,7 @@ const TrustedAddresses = () => {
     <div className="mt-8">
       <div className="flex flex-row justify-between">
       <h1 className="text-xl font-semibold text-gray-900">Trusted Addresses</h1>
-      {myAddress && moderators.includes(myAddress) && <button onClick={handleModalOpen}>Add Trusted Address</button>}
+      {myAddress && moderators.includes(myAddress) && <button onClick={handleModalOpen} className='bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 border border-blue-500 hover:border-transparent rounded-md'>Add Trusted Address</button>}
       </div>
       <div className='mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 '>
         {admins.map((e:any,i:number)=>{
@@ -90,8 +90,9 @@ const TrustedAddresses = () => {
                     </div>
                     <div className="flex flex-row">
                       <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAddress(e.target.value)} value={address} type="text" />
-                      <div className={`ml-2 mt-1 mb-1 p-2 ${address? 'bg-green-300': 'bg-yellow-600'} rounded-md`}>
-                        {address ? <button onClick={handleAddTrusted}>Add</button>:<button disabled={true}>Add</button>}
+                      <div className={`ml-2 mt-1 mb-1 p-2 ${address? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
+                        {address ? <button onClick={handleAddTrusted} className='text-white font-medium'>Add</button>:
+                        <button disabled={true} className='text-white font-medium'>Add</button>}
                       </div>
                     </div>
                    </div>

@@ -1,7 +1,7 @@
 import { TezosToolkit } from '@taquito/taquito'
 import { useEffect } from 'react'
 import {  useEndpoint, useNetwork } from '../../contexts/Settings'
-import {FaCoins, FaUserTie, FaUsers} from 'react-icons/fa'
+import { FaCoins, FaUserTie, FaUsers } from 'react-icons/fa'
 import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 
 
@@ -82,6 +82,7 @@ const CollectingCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
+            props.loadStorage()
             } else {
             console.log('An error has occurred');
             }

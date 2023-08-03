@@ -1,9 +1,7 @@
 import { TezosToolkit } from '@taquito/taquito'
-import React from 'react'
-import { useState, useEffect } from 'react'
-import {  useEndpoint, useNetwork } from '../../contexts/Settings'
-import {FaCoins, FaNapster, FaUserTie, FaUsers} from 'react-icons/fa'
-import { BeaconProvider, useBeacon, useWalletAddress } from '../../contexts/Beacon'
+import { useEndpoint, useNetwork } from '../../contexts/Settings'
+import { FaUserTie } from 'react-icons/fa'
+import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 
 const StartingCard = (props:any) => {
     const walletAddress = useWalletAddress()

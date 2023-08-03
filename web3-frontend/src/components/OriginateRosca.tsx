@@ -109,7 +109,7 @@ const OriginateRosca = () => {
     
   return (
     <div>
-      <button onClick={handleModalOpen}> Add Rosca </button>
+      <button onClick={handleModalOpen} className='bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 border border-blue-500 hover:border-transparent rounded-md'> Add Rosca </button>
       <Dialog 
             open={modalOpen?modalOpen:false} 
             onClose={() => setModalOpen(false)}
@@ -122,8 +122,8 @@ const OriginateRosca = () => {
                         <p className='font-bold text-2xl'>Add New Rosca</p>
                       </div>
                       <div className="flex flex-col ">
-                          <div className="flex flex-col mb-4 items-center">
-                            <p className='font-bold'>Contributing Duration</p>
+                          <div className="flex flex-col mb-6 items-center">
+                            <p className='font-bold pb-2'>Contributing Duration</p>
                             <div className='flex justify-between'>
                               Days:
                               <input type="number" min="0" onChange={(e)=>{setRoscaDuration({...roscaDuration, days: e.target.value})}} className='w-20 h-8 ml-2 mr-4'/>
@@ -139,14 +139,14 @@ const OriginateRosca = () => {
                               <input type="number" min="0" onChange={(e)=>{setRoscaParameters({...roscaParameters, maxParticipants: e.target.value})}} className='w-20 h-8 ml-4'/>
                             </div>
                             <div className='flex w-full justify-between'>
-                              <p className='font-bold'>Total Rosca Amount (tz) </p>
+                              <p className='font-bold'>Total Rosca Amount (ꜩ) </p>
                               <input type="number" min="0" onChange={(e)=>{setRoscaParameters({...roscaParameters, totalRosca: e.target.value})}} className='w-20 h-8 ml-4'/>
                             </div>
                           </div>
                       </div>                 
                       <div className={`ml-2 mt-1 mb-1 p-2 rounded-md ${roscaParameters.maxParticipants && roscaParameters.totalRosca && (0<(roscaDuration.minutes*60+roscaDuration.hours*3600+roscaDuration.days*86400)) ?
-                        'bg-green-300': 'bg-yellow-600'} flex flex-col items-center`}>
-                        <button onClick={handleAddRosca} className='w-full'> Add Rosca </button> 
+                        'bg-green-500 hover:bg-green-600': 'bg-orange-400'} flex flex-col items-center`}>
+                        <button onClick={handleAddRosca} className='w-full text-white font-medium'> Add Rosca </button> 
                       </div>
                       {/* {JSON.stringify(roscaParameters)}
                       <br />
