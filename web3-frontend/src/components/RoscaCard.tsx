@@ -171,11 +171,13 @@ const RoscaCard = (props:any) => {
         .catch((err) => console.log(err));
       }
     function formatEndtime(end_time:any) {
-        let formatted = JSON.stringify(end_time.Some)
-    // let formatted = end_time && (end_time.Some.slice(5,7) + '/' + end_time.Some.slice(8,10) + '/' + end_time.Some.slice(0,4) + ' ' + end_time.Some.slice(11,19))
-    return formatted
+    let date = end_time&& new Date(end_time.Some)
+    let time = date.getTime() +1000*3600
+    let newtime = JSON.stringify(new Date(time))
+    let formatted = newtime && (newtime.slice(1,11) + ' ' + newtime.slice(12,20))
+    return JSON.stringify(formatted)
     }
-    
+     
     const Loading = ()=>{
         return(
             <div className="m-8 p-8 font-bold font-size-xl">
