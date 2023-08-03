@@ -195,7 +195,6 @@ const RoscaCard = (props:any) => {
     return (
         <div className="flex flex-col" >
             <button onClick={deleteContract}>Delete Rosca</button>
-            <button onClick={loadStorage}>refresh</button>
             {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
             {status?
             <div>
