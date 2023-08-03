@@ -139,7 +139,30 @@ const RoscaCard = (props:any) => {
             }
         })
         .catch((err) => console.log(err));
-    } 
+    }
+    const deleteContract = async()=>{
+        const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        wallet && setTezosProvider()  
+        wallet && tezos.wallet
+        .at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        .then((wallet) => contract.methods.deleteContract(contractAddress).send())
+        .then((op) => {
+            console.log(`Hash: ${op.opHash}`);
+            return op.confirmation();
+        })
+        .then((result) => {
+            console.log(result);
+            if (result&&result.completed) {
+            console.log(`Transaction correctly processed!
+            Block: ${result.block.header.level}
+            Chain ID: ${result.block.chain_id}`);
+            setInterval(()=>{refreshPage()},3000)
+            } else {
+            console.log('An error has occurred');
+            }
+        })
+        .catch((err) => console.log(err));
+      }
     
     const Loading = ()=>{
         return(
@@ -151,9 +174,13 @@ const RoscaCard = (props:any) => {
     const handleModalOpen = ()=>{
         setModalOpen(true) 
     }
+    function refreshPage() {
+        window.location.reload();
+    }
     
     return (
         <div className="flex flex-col" >
+            <button onClick={deleteContract}>Delete Rosca</button>
             {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
             {status ? status ==0 && <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
             {status ? status ==1 && <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} participantsArray={participantsArray} />: <Loading/>}

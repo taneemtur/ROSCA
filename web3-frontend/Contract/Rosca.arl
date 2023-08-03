@@ -135,7 +135,7 @@ entry join(){                                                                   
   state is Collecting
   require {
       is_paused_r2: is_not_paused() otherwise "Rosca is Paused";
-      join_r1: participants_count<=max_participants otherwise "Maximum number of participants reached."
+      join_r1: participants_count<max_participants otherwise "Maximum number of participants reached."
   }
   fail if {
     c1: participant.contains(caller);

@@ -55,6 +55,7 @@ const OriginateRosca = () => {
       .catch((err) => console.log(err));
     }
 
+
     const originate = async (totalRosca:number,duration:number,maxP:number) =>{
         wallet && await wallet.requestPermissions({ network: {type:network} })
         tezos.setWalletProvider(wallet)
