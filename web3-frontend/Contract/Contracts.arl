@@ -1,0 +1,56 @@
+// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y
+archetype contracts(owner: address)
+
+event ContractAdded{
+  new_contract : address;
+  admin : address;
+}
+event ContractDeleted{
+  ex_contract : address;
+}
+// Storage --------------------------------------------------------------------------------------------------------
+asset contracts identified by c_address{
+    c_address: address;
+    deployer: address;
+}
+asset admins{
+    a_address: address;
+}
+
+variable contracts_count: nat = 0
+
+// Entrypoints --------------------------------------------------------------------------------------------------
+entry addContract(cAddress : address){
+    require {
+        r1: admins.contains(caller) otherwise "You do not have access"
+    }
+    effect{
+    contracts_count += 1;
+    contracts.add({c_address = cAddress; deployer=caller});
+    emit<ContractAdded>({cAddress; caller})
+  }
+}
+
+entry deleteContract(cAddress : address){
+    require {
+        r2: admins.contains(caller) otherwise "You do not have access"
+    }
+    effect{
+    contracts_count -= 1;
+    contracts.remove(cAddress);
+    emit<ContractDeleted>({cAddress})
+  }
+}
+
+entry addAdmin(new_admin: address){
+   called by owner
+   effect{
+    admins.add({a_address = new_admin})
+   } 
+}
+entry deleteAdmin(ex_admin: address){
+   called by owner
+   effect{
+    admins.remove(ex_admin)
+   } 
+}

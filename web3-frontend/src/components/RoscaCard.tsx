@@ -10,16 +10,19 @@ import StartingCard from './Cards/StartingCard'
 import CollectingCard from './Cards/CollectingCard'
 import DistirbutingCard from './Cards/DistirbutingCard'
 import DistirbutedCard from './Cards/DistirbutedCard'
+import { Dialog } from '@headlessui/react'
+import { useAdmins } from '../contexts/Contracts'
 
 const RoscaCard = (props:any) => {
-    const myAddress = useWalletAddress()
+    const walletAddress = useWalletAddress()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
     const tezos = new TezosToolkit(endpoint)
     const wallet = useBeacon()
     const network = useNetwork()
+    const admins = useAdmins()
 
-    const [userAddress,setUserAddress] = useState("")
+    const [modalOpen, setModalOpen] = useState(false)
     const [provider,setProvider] = useState()
     const [participantsArray,setParticipantsArray] = useState([{
         address: null,
@@ -74,68 +77,34 @@ const RoscaCard = (props:any) => {
     }, [])
 
     useEffect(()=>{
-        const parsed = participant && Object.fromEntries(participant.valueMap) 
-        parsed && console.log('aaaa', Object.keys(parsed)[0],Object.values(parsed)[0])
+        const keys = participant && Object.values(participant)[0]
+        keys&& console.log(keys)
+        const keyArr = keys && Array.from(keys.values())
+        keyArr && console.log(keyArr[0])
+
+        const values = participant && Object.values(participant)[0]
+        const valueArr = values && Array.from(values.keys())
+        valueArr && console.log(valueArr)
+        valueArr && valueArr.forEach((e:any) => {
+            console.log(e.slice(1,e.length-1))
+        }); 
         const length = participant && participant.valueMap.size
-        length&& console.log(length)
-         if(length){
-            for(let i=0;i<length;i++){
-                let participantObject = parsed && {address:Object.keys(parsed)[i], values: Object.values(parsed)[i]}
-                participantObject && console.log('part',participantObject)
-                 setParticipantsArray(participantsArray=>[...participantsArray,participantObject])
+        const myArr = participant&& []
+         if(length){    
+            for(let i=0;i<length;i++){  
+                let participantObject = keyArr&&{address:valueArr[i].slice(1,valueArr[i].length-1), values: keyArr[i]}
+                participantObject && console.log('part',participantObject) 
+                myArr.push(participantObject)
             }
+            console.log(myArr)
+            myArr&& setParticipantsArray(myArr)
          }
     },[participant])
 
     const parseAddress =(address:string)=>{
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
         return parsed
-    }
-
-    const startContributing = async()=>{
-        const contract = await tezos.wallet.at(contractAddress)
-        wallet && setTezosProvider()  
-        wallet && tezos.wallet
-        .at(contractAddress)
-        .then((wallet) => contract.methods.start_contributing().send())
-        .then((op) => {
-            console.log(`Hash: ${op.opHash}`);
-            return op.confirmation();
-        })
-        .then((result) => {
-            console.log(result);
-            if (result&&result.completed) {
-            console.log(`Transaction correctly processed!
-            Block: ${result.block.header.level}
-            Chain ID: ${result.block.chain_id}`);
-            } else {
-            console.log('An error has occurred');
-            }
-        })
-        .catch((err) => console.log(err));
-    } 
-
-    const getStatus = async()=>{
-        const contract = await tezos.wallet.at(contractAddress)
-        wallet && setTezosProvider()  
-        wallet && tezos.contract
-        .at(contractAddress)
-        .then((contract) => contract.views.show_currentState().read())
-        .then((op) => {
-            console.log(`Hash: ${op}`);
-            return op;
-        })
-        .then((result) => {
-            console.log('res:', result);
-            if (result) {
-            console.log(`Transaction correctly processed!`)
-            } else {
-            console.log('An error has occurred');
-            }
-        })
-        .catch((err) => console.log(err));
-    } 
-    
+    }    
 
     const setTezosProvider =async() => {
         try {
@@ -148,25 +117,13 @@ const RoscaCard = (props:any) => {
         }
         
     }
-    const getWalletPKH =async () => {
-        const userAddress = wallet && await wallet.getPKH()
-        userAddress && setUserAddress(userAddress)
-    }
-    useEffect(() => {
-        getWalletPKH()
-    }, [])
-
-    useEffect(() => {
-        console.log(userAddress)
-        console.log(provider)
-    }, [userAddress,provider]) 
 
     const changeAdmin = async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
         .at(contractAddress)
-        .then((wallet) => contract.methods.changeAdmin(myAddress).send())
+        .then((wallet) => contract.methods.changeAdmin(walletAddress).send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
             return op.confirmation();
@@ -182,7 +139,34 @@ const RoscaCard = (props:any) => {
             }
         })
         .catch((err) => console.log(err));
-    } 
+    }
+    const deleteContract = async()=>{
+        const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        wallet && setTezosProvider()  
+        wallet && tezos.wallet
+        .at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        .then((wallet) => contract.methods.deleteContract(contractAddress).send())
+        .then((op) => {
+            console.log(`Hash: ${op.opHash}`);
+            return op.confirmation();
+        })
+        .then((result) => {
+            console.log(result);
+            if (result&&result.completed) {
+            console.log(`Transaction correctly processed!
+            Block: ${result.block.header.level}
+            Chain ID: ${result.block.chain_id}`);
+            setInterval(()=>{refreshPage()},3000)
+            } else {
+            console.log('An error has occurred');
+            }
+        })
+        .catch((err) => console.log(err));
+      }
+    function formatEndtime(end_time:any) {
+    let formatted = end_time && (end_time.Some.slice(5,7) + '/' + end_time.Some.slice(8,10) + '/' + end_time.Some.slice(0,4) + ' ' + end_time.Some.slice(11,19))
+    return formatted
+    }
     
     const Loading = ()=>{
         return(
@@ -191,23 +175,62 @@ const RoscaCard = (props:any) => {
             </div>
         )
     }    
-    // useEffect(() => {
-    //   loadStorage()
-    // }, [refresh])
+    const handleModalOpen = ()=>{
+        setModalOpen(true) 
+    }
+    function refreshPage() {
+        window.location.reload();
+    }
     
     return (
-        <div className="">
-            {(myAddress=='tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R'|| myAddress=='tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR'|| myAddress=='tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu') && <button onClick={changeAdmin}>MakeMeAdmin</button>}
-            {status ? status ==0 && <StartingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==1 && <CollectingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==2 && <ContributingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray}/>: <Loading/>}
-            {status ? status ==3 && <DistirbutingCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/> : <Loading/>}
-            {status ? status ==4 && <DistirbutedCard refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} received_count={received_count} receiver={receiver}/>: <Loading/>}
-            {participantsArray&& participantsArray.map((e,i)=>{
-                return(
-                    <p>{`Participantf ${i+1} : `+ e.address&&e.address}</p>
-                )
-            })}
+        <div className="flex flex-col" >
+            <button onClick={deleteContract}>Delete Rosca</button>
+            {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
+            {status ? status ==0 && <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
+            {status ? status ==1 && <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} participantsArray={participantsArray} />: <Loading/>}
+            {status ? status ==2 && <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time}/>: <Loading/>}
+            {status ? status ==3 && <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/> : <Loading/>}
+            {status ? status ==4 && <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} contributors_count={contributors_count}  received_count={received_count} receiver={receiver}/>: <Loading/>}
+            <Dialog 
+            open={modalOpen?modalOpen:false} 
+            onClose={() => setModalOpen(false)}
+            className="relative z-50">
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+                <Dialog.Panel className='p-4 rounded-lg bg-blue-100 '>
+                    {owner && <div className="">
+                    <p className='text-center text-2xl'>Rosca: {parseAddress(contractAddress)}</p>
+                    <p>Owner: {parseAddress(owner)}</p>
+                    <p>Total Rosca Amount: {rosca_total} ꜩ</p>
+                    <p>Duration: {contributing_duration.toNumber()} seconds</p>
+                    <p>Max Participants: {max_participants.toNumber()}</p>
+                    <p>Status: {(status.toNumber() ==0 && "Starting")  || 
+                    status.toNumber() ==1 && "Collecting Applications" || 
+                    status.toNumber() ==2 && "Contributing" || 
+                    status.toNumber() ==3 && "Distirbuting" || 
+                    status.toNumber() ==4 && "Distirbuted"}</p>
+                    <p>Paused: {JSON.stringify(paused)}</p>
+                    <p>Pot: {pot.toNumber()} ꜩ</p>
+                    <p>Participants Count: {participants_count.toNumber()}</p>
+                    <p>Contributors Count: {contributors_count.toNumber()}</p>
+                    <p>Banned Count: {banned_count.toNumber()}</p>
+                    {end_time &&<p>Contribution Ending: {formatEndtime(end_time)}</p>}
+                    <p>Current Receiver: {receiver}</p>
+                    <p>Admin: {parseAddress(admin)}</p>
+                    {participantsArray && participantsArray.map((e:any,i:number)=>{
+                        console.log(e.address)
+                        return (
+                            <div className="">
+                                {participants_count > 0 ? 
+                                <p>{i} - {parseAddress(JSON.stringify(e.address))}</p>
+                                :<p>Doesnt have any participants yet</p> }
+                            </div>
+                        )
+                    })}
+                    </div>}
+                </Dialog.Panel>
+            </div>
+            </Dialog>
         </div>
     )
 }

@@ -1,20 +1,26 @@
 import './App.css';
-import  {useState} from 'react';
+import  {useEffect, useState} from 'react';
 import { WalletInfo } from './components/WalletInfo';
 import RoscaCard from './components/RoscaCard';
 import {HiOutlineCollection} from 'react-icons/hi'
 import { useBeacon, useWalletAddress } from './contexts/Beacon';
-
+import OriginateRosca from './components/OriginateRosca';
+import { useEndpoint, useNetwork } from './contexts/Settings';
+import { TezosToolkit } from '@taquito/taquito';
+import { useAdmins, useContract } from './contexts/Contracts';
+import TrustedAddresses from './components/TrustedAddresses';
+ 
 
 function App() {
-  const userAddress = useWalletAddress()
-  const [contracts, setContracts] = useState([
-    "KT18be2W9UMnEQ6irroT7bSnEbuvrZVvc8Zf",
-    "KT1X96iFLQY2sq5QE5To264pW662u6C1Lr2m",
-    "KT1XaqY7e4k9mwd4cR4ocMKdPgsywhTsFc9j",
-    "KT1MLYcBRhuxXpyErdhjWL2wjyfEYoxFoGxv",
-    "KT1DzmrRBcLMop7zurDx4aE9cWdESyvpZpxF"
-  ])
+  const walletAddress = useWalletAddress()
+  const endpoint = useEndpoint()
+  const tezos = new TezosToolkit(endpoint)
+  const wallet = useBeacon()
+  const network = useNetwork()
+  const roscaContracts = useContract()
+  const admins = useAdmins()
+
+
   function refreshPage() {
     window.location.reload();
   }
@@ -54,15 +60,19 @@ function App() {
             <div className="sm:flex sm:items-center">
               <div className="sm:flex-auto">
                 <h1 className="text-xl font-semibold text-gray-900">Cohorts</h1>
-                <p className="mt-2 text-sm text-gray-700">
-                  A list of Cohorts to be participated on.      
-                </p>
-                <button className='float-right' onClick={refreshPage}>Click to Reload</button>
+                <div className='flex justify-between'>
+                  <p className="mt-2 text-sm text-gray-700">A list of Cohorts to be participated on.</p>
+                  {admins && admins.includes(walletAddress) && 
+                      <OriginateRosca/>
+                  }
+
+                </div>
                     <div
-                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ">
-                        {contracts && userAddress ?
+                      className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
+                        {roscaContracts && roscaContracts.length>0 && walletAddress ? 
                         <div className="flex flex-row flex-wrap">
-                          {contracts.map((c)=>{
+                          {roscaContracts&& console.log(roscaContracts)}
+                          {roscaContracts.map((c:any)=>{
                           return <RoscaCard contract={c}/>
                           })}
                         </div>:
@@ -72,6 +82,7 @@ function App() {
                         </div>
                         }
                     </div>
+                    <TrustedAddresses/>
               </div>
             </div>
           </div>

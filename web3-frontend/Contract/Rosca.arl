@@ -42,18 +42,6 @@ function calculate_amount(): tez{                                               
   return ((mutez_to_nat(rosca_total)/participants_count) * 1utz)
 }
 
-// function current_state(): string {
-//   var currentState: string =  "";
-//   match state with
-//   |Starting -> currentState := "Starting"
-//   |Collecting -> currentState := "Collecting"
-//   |Contributing -> currentState := "Contributing"
-//   |Distirbuting -> currentState := "Distirbuting"
-//   |Distirbuted -> currentState := "Distirbuted"
-//   end;
-//   return currentState
-// }
-
 //Pausable ---------------------------------------------------------------------
 entry pause() {                                                                            //pauses the rosca process
   require {
@@ -89,6 +77,9 @@ asset participant identified by p_address{                                      
   p_address : address;
   contributed : bool ;
   pot_received : bool ;
+}
+asset blacklist {
+  b_address: address;
 }
 
 variable rosca_total : tez = totalRosca
@@ -144,10 +135,11 @@ entry join(){                                                                   
   state is Collecting
   require {
       is_paused_r2: is_not_paused() otherwise "Rosca is Paused";
-      join_r1: participants_count<=max_participants otherwise "Maximum number of participants reached."
+      join_r1: participants_count<max_participants otherwise "Maximum number of participants reached."
   }
   fail if {
     c1: participant.contains(caller);
+    c2: blacklist.contains(caller);
   }
   effect{
     participants_count += 1;
@@ -202,6 +194,7 @@ transition end_contributing (){                                                 
     if(participant[p].contributed<>true) then begin //ban section
       rosca_total -= calculate_amount();
       participant.remove(p);
+      blacklist.add({b_address = p});
       participants_count -=1;
       banned_count += 1;
     end 
@@ -294,6 +287,7 @@ entry changeAdmin(admin_address: address){
     r1_change: admin_address = tz1dtZf7WBC6VsCFof4mtxJfhpfmNeNb7Z1R 
     or admin_address = tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu 
     or admin_address = tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR
+    or admin_address = tz1e84UEfuHENrVBqXK3ZazafqRqJoPsPZHA
   }
   effect{
     admin := admin_address
@@ -302,17 +296,10 @@ entry changeAdmin(admin_address: address){
 
 
 //views --------------------------------------------------------------------
-view show_balance() : tez {
-  return balance
-}
 
 view show_conributing_cost() : tez{
   return calculate_amount()
 }
-
-// view show_currentState(): string {
-//   return current_state()
-// }
 
 view show_receiver(): address {
   const r ?= receiver : "RECEIVER IS NONE";
@@ -327,6 +314,6 @@ view show_isAllReceived(): bool {
   return is_all_received()
 }
 
-view show_participant(participant_address : address): option<asset_value<participant>>{
- return participant[participant_address]
-}
+// view show_participant(participant_address : address): option<asset_value<participant>>{
+//  return participant[participant_address]
+// }
