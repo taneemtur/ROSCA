@@ -65,10 +65,10 @@ function App() {
                   {admins && admins.includes(walletAddress) && 
                       <OriginateRosca/>
                   }
-
                 </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
+                        <div className='text-right'><button onClick={refreshPage} >Refresh</button></div>
                         {roscaContracts && roscaContracts.length>0 && walletAddress ? 
                         <div className="flex flex-row flex-wrap">
                           {roscaContracts&& console.log(roscaContracts)}

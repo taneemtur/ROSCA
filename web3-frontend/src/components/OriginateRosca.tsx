@@ -47,7 +47,7 @@ const OriginateRosca = () => {
           console.log(`Transaction correctly processed!
           Block: ${result.block.header.level}
           Chain ID: ${result.block.chain_id}`);
-          setInterval(()=>{refreshPage()},3000)
+          setTimeout(()=>{refreshPage()},3000)
           } else {
           console.log('An error has occurred');
           }

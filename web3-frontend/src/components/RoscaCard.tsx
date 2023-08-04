@@ -71,7 +71,14 @@ const RoscaCard = (props:any) => {
         admin: contractStorage.admin,
         }) 
         setStorage(contractStorage)
-    },[])    
+    },[])
+
+    useEffect(() => {
+        setTimeout(()=>{
+            loadStorage()
+            console.log('reloaeddddddddddddd')
+        },5000)
+    }, [])
     useEffect(() => {
         loadStorage()
     }, [])
@@ -164,10 +171,13 @@ const RoscaCard = (props:any) => {
         .catch((err) => console.log(err));
       }
     function formatEndtime(end_time:any) {
-    let formatted = end_time && (end_time.Some.slice(5,7) + '/' + end_time.Some.slice(8,10) + '/' + end_time.Some.slice(0,4) + ' ' + end_time.Some.slice(11,19))
-    return formatted
+    let date = end_time&& new Date(end_time.Some)
+    let time = date.getTime() +1000*3600
+    let newtime = JSON.stringify(new Date(time))
+    let formatted = newtime && (newtime.slice(1,11) + ' ' + newtime.slice(12,20))
+    return JSON.stringify(formatted)
     }
-    
+     
     const Loading = ()=>{
         return(
             <div className="m-8 p-8 font-bold font-size-xl">
@@ -186,11 +196,18 @@ const RoscaCard = (props:any) => {
         <div className="flex flex-col" >
             <button onClick={deleteContract}>Delete Rosca</button>
             {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
-            {status ? status ==0 && <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>: <Loading/>}
-            {status ? status ==1 && <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} participantsArray={participantsArray} />: <Loading/>}
-            {status ? status ==2 && <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time}/>: <Loading/>}
-            {status ? status ==3 && <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/> : <Loading/>}
-            {status ? status ==4 && <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} contributors_count={contributors_count}  received_count={received_count} receiver={receiver}/>: <Loading/>}
+            {status?
+            <div>
+                {status && status ==0 && <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants}/>}
+                {status && status ==1 && <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} participantsArray={participantsArray} />}
+                {status && status ==2 && <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time}/>}
+                {status && status ==3 && <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} banned_count={banned_count} receiver={receiver}/>}
+                {status && status ==4 && <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} refresh={refresh} setRefresh={setRefresh} contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} pot={pot} contributors_count={contributors_count}  received_count={received_count} receiver={receiver}/>}
+            </div>:
+            <div>
+                <Loading/>
+            </div>
+            }
             <Dialog 
             open={modalOpen?modalOpen:false} 
             onClose={() => setModalOpen(false)}
