@@ -1,7 +1,9 @@
 import { TezosToolkit } from '@taquito/taquito'
 import { useState, useEffect } from 'react'
-import {  useEndpoint, useNetwork } from '../../contexts/Settings'
-import { FaCoins, FaUserTie, FaUsers } from 'react-icons/fa'
+import {  useEndpoint, useNetwork, useRefresh, useSetRefresh } from '../../contexts/Settings'
+import { FaCoins, FaUserTie, FaUsers, FaPauseCircle ,FaPlayCircle } from 'react-icons/fa'
+import { ImCross } from 'react-icons/im'
+import { BiReset } from 'react-icons/bi'
 import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 import CountdownTimer from '../CountdownTimer'
 
@@ -12,7 +14,11 @@ const ContributingCard = (props:any) => {
     const tezos = new TezosToolkit(endpoint)
     const wallet = useBeacon()
     const network = useNetwork()
+    const refresh = useRefresh()
+    const setRefresh = useSetRefresh()
 
+    const [control,setControl] = useState(true)
+    const [expired,setExpired] = useState(false)
     const [countdown, setCountdown] = useState<any>(null)
 
     const parseAddress =(address:string)=>{
@@ -73,19 +79,16 @@ const ContributingCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
-            props.loadStorage()
+            handleRefresh()
             } else {
             console.log('An error has occurred');
             }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+            console.log(err)
+            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
+            err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
-    const calculateAmount=()=>{
-       var amount = props.rosca_total /props.participants_count.toNumber()
-       console.log(amount)
-       return amount
-    }
-    
     const contributeRosca= async()=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
@@ -102,24 +105,63 @@ const ContributingCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
-            props.loadStorage()
+            handleRefresh()
             } else {
             console.log('An error has occurred');
             }
         })
-        .catch((err) => console.log(err));
-    } 
+        .catch((err) => {
+            console.log(err)
+            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
+            err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
+    }
+
+    const calculateAmount=()=>{
+       var amount = props.rosca_total /props.participants_count.toNumber()
+       console.log(amount)
+       return amount
+    }
+ 
     function formatEndtime() {
         let formatted = props.end_time && (props.end_time.Some.slice(5,7) + '/' + props.end_time.Some.slice(8,10) + '/' + props.end_time.Some.slice(0,4) + ' ' + props.end_time.Some.slice(11,19))
         let date1 =  new Date(formatted)
         let getDate =  date1.getTime()
-        let NOW_IN_MS = new Date().getTime();
-        let diff = getDate - NOW_IN_MS
-        console.log(diff)
-        diff && setCountdown(NOW_IN_MS+(getDate-NOW_IN_MS))
+        let timezone = new Date().getTimezoneOffset()
+        let datebyTimezone = getDate - (timezone*60000) 
+        setCountdown(datebyTimezone)   
+        return datebyTimezone
+    }
+    const readyToDistirbute =()=>{ 
+        if(expired&&walletAddress==props.admin){
+            if(props.contributors_count==0){
+            setTimeout(()=>{props.emergencyReset()},2000)
+            }else{
+            setTimeout(()=>{startDistirbuting()},2000)
+            }
+        }
     }
     useEffect(() => {
-        console.log("endtime: ", formatEndtime())
+        setTimeout(()=>{setControl(true)},10000)
+       }, [control])
+       
+       useEffect(() => {
+           if(control){
+               setControl(false)
+               readyToDistirbute()
+           }
+       }, [expired])
+
+    function refreshPage() {
+        window.location.reload();
+    }
+    const handleRefresh = ()=>{
+        refresh?setRefresh(false):setRefresh(true)
+    }
+    const handleReset=()=>{
+        props.emergencyReset()
+    }
+    useEffect(() => {
+        console.log("endtime: ", formatEndtime()) 
     }, [])
     
     return (
@@ -129,31 +171,45 @@ const ContributingCard = (props:any) => {
            <div className='flex flex-row justify-between bg-[#09417D] w-full h-20 pr-6 pl-10 pt-4 rounded-t-[48px]' onClick={props.handleModalOpen}>
                 <div className="text-xl text-white">
                     <p>Rosca: {parseAddress(contractAddress)}</p>
-                    <p className='text-start'>Contributing..</p>
+                    {props.paused?<p className='text-start'>Contributing (Paused)</p>:<p className='text-start'>Contributing...</p>}
                 </div>
-                <div className="bg-[#FAFF00] mt-2 h-10 w-10 rounded-full"></div>
+                {props.paused?<div className="bg-gray-400 mt-2 h-10 w-10 rounded-full"></div>:
+                <div className="bg-[#FAFF00] mt-2 h-10 w-10 rounded-full group">
+                    {walletAddress==props.admin&&<div className='bg-red-400 hidden h-10 w-10 pl-2 pt-2 rounded-full group-hover:block' onClick={props.deleteContract}><ImCross color='white' size={'24px'}/></div>}
+                </div>}
             </div>
-            <div className="flex flex-col h-32 pr-6 pl-12 pt-6" onClick={props.handleModalOpen}>
-                <div className='flex flex-row pb-2'> 
-                    <div className="pt-1"><FaUserTie/></div>
-                    <p className='pl-2'>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
-                </div>
-                <div className='flex flex-row pb-2'>
-                    <div className="pt-1"><FaCoins/></div>
-                    <p className='pl-2'>{props.rosca_total} ꜩ</p>
-                </div>
-                <div className='flex flex-row pb-2 justify-between'>
-                    <div className="flex">
-                        <div className="pt-1"><FaUsers/></div>
-                        {/* <p className='pl-2'>{props.participants_count.toNumber()}/{props.max_participants.toNumber()}</p> */}
-                        <p className='pl-2'>{props.contributors_count.toNumber()}/{props.participants_count.toNumber()}</p>
+            <div className="flex flex-row h-32 pr-6 pl-12 pt-6 justify-between" >
+                <div onClick={props.handleModalOpen}>
+                    <div className='flex flex-row pb-2'> 
+                        <div className="pt-1"><FaUserTie/></div>
+                        <p className='pl-2'>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
                     </div>
-                    <div className="flex flex-row">
-                        <p>⌛ </p>
-                        {countdown && <CountdownTimer targetDate={countdown}/>}
+                    <div className='flex flex-row pb-2 justify-between'>
+                        <div className='flex'>
+                            <div className="pt-1"><FaCoins/></div>
+                            <p className='pl-2'>{props.rosca_total} ꜩ</p>
+                        </div>
+                        <div className="flex pl-4">
+                            <div className="pt-1"><FaUsers/></div>
+                            <p className='pl-2'>{props.contributors_count.toNumber()}/{props.participants_count.toNumber()}</p>
+                        </div>
+                    </div>
+                    <div className='flex flex-row pb-2 justify-between'>
+                        <div className="flex flex-row">
+                            <p>⌛ </p> 
+                            {countdown && <CountdownTimer setExpired={setExpired} targetDate={countdown}/>}
+                        </div>
+                    </div>
+                </div> 
+                <div>
+                    <div className="flex flex-col h-full justify-between">
+                        {walletAddress==props.admin && props.paused?
+                        <button onClick={props.resumeRosca}><FaPlayCircle size={'24px'}/></button>:<button onClick={props.pauseRosca}><FaPauseCircle size={'24px'}/></button>}
+                        {walletAddress==props.admin && <button className='pb-5 pl-1' onClick={handleReset}><BiReset/></button>}
                     </div>
                 </div>
             </div>
+            {props.paused?<div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center text-xl">Rosca is Paused...</div>:
             <div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center">
                 {props.admin && walletAddress && walletAddress==props.admin?
 
@@ -173,7 +229,7 @@ const ContributingCard = (props:any) => {
                     :<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
                 :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >X Not Joined</button></div>
                 }
-            </div>
+            </div>}
         </div>}
     </div>
     )

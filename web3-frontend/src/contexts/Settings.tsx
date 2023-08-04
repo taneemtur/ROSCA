@@ -8,6 +8,8 @@ export const [
   useEndpoint,
   useContractAddress,
   useNetwork,
+  useRefresh,
+  useSetRefresh
 ] = constate(
   () => {
     const [settingState, setState] = useState({
@@ -17,11 +19,16 @@ export const [
       ipfs_browser    : 'https://gateway.pinata.cloud/ipfs/',
       network         :  NetworkType.GHOSTNET,
     });
-    return { settingState, setState };
+    const [refresh,setRefresh] = useState(false)
+    const Refresh = ()=>{
+      setRefresh(true)
+    }
+    return { settingState, setState, refresh, setRefresh};
   },
   v => v.settingState.app_name,
   v => v.settingState.endpoint,
   v => v.settingState.contract,
   v => v.settingState.network,
-  v => v.settingState.ipfs_browser,
+  v=> v.refresh,
+  v=> v.setRefresh
 );

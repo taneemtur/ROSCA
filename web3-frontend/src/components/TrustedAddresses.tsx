@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAdmins } from '../contexts/Contracts'
 import { useBeacon, useWalletAddress } from '../contexts/Beacon'
-import { useEndpoint, useNetwork } from '../contexts/Settings'
+import { useEndpoint, useNetwork, useRefresh, useSetRefresh } from '../contexts/Settings'
 import { TezosToolkit } from '@taquito/taquito'
 import { Dialog } from '@headlessui/react'
 
@@ -13,6 +13,9 @@ const TrustedAddresses = () => {
   const tezos = new TezosToolkit(endpoint)
   const wallet = useBeacon()
   const network = useNetwork()
+  const refresh = useRefresh()
+  const setRefresh = useSetRefresh()
+  
   const [modalOpen, setModalOpen] = useState(false)
   const [address,setAddress] = useState<any>(null)
   const moderators = ["tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu","tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR"]
@@ -42,13 +45,15 @@ const TrustedAddresses = () => {
         console.log(`Transaction correctly processed!
         Block: ${result.block.header.level}
         Chain ID: ${result.block.chain_id}`);
-        setInterval(()=>{refreshPage()},2000)
+        handleRefresh()
         } else {
         console.log('An error has occurred');
         }
     })
-    .catch((err) => console.log(err));
-    return 0 
+    .catch((err) => {
+      console.log(err)
+      err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
+      err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
   }
   const handleAddTrusted = ()=>{
     if(address.length<36){
@@ -62,6 +67,9 @@ const TrustedAddresses = () => {
   const handleModalOpen = ()=>{
     setModalOpen(true) 
   }
+  const handleRefresh = ()=>{
+    refresh?setRefresh(false):setRefresh(true)
+  } 
   function refreshPage() {
     window.location.reload();
   }
