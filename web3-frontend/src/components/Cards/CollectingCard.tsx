@@ -100,7 +100,7 @@ const CollectingCard = (props:any) => {
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const readyToContribute =()=>{ 
-        if((1<=props.participants_count.toNumber())&&walletAddress==props.admin){
+        if((props.max_participants.toNumber()<=props.participants_count.toNumber())&&walletAddress==props.admin){
             setTimeout(()=>{startContributing()},2000)
         }
     }
@@ -164,7 +164,6 @@ const CollectingCard = (props:any) => {
                     <div className="flex flex-col h-full justify-between">
                         {walletAddress==props.admin && props.paused?
                         <button onClick={props.resumeRosca}><FaPlayCircle size={'24px'}/></button>: walletAddress==props.admin &&<button onClick={props.pauseRosca}><FaPauseCircle size={'24px'}/></button>}
-                        {walletAddress==props.admin && !props.paused && <button className='pb-5 pl-1' onClick={handleReset}><BiReset/></button>}
                     </div>
                 </div>
             </div>
