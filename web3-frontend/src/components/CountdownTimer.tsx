@@ -11,8 +11,11 @@ const ExpiredNotice = () => {
 
 const ShowCounter = (props:any) => {
   return (
-    <div className="show-counter">
-        <p>{props.days && props.days > 0 &&  + "D"} {props.hours && props.hours + "H" } {props.minutes && props.minutes + "M"} {props.seconds && props.seconds + "S"}</p>
+    <div className="show-counter flex">
+        <p className='pr-1'>{props.days&&props.days}D</p>
+        <p className='pr-1'>{props.hours&&props.hours}H</p>
+        <p className='pr-1'>{props.minutes&&props.minutes}M</p>
+        <p className='pr-1'>{props.seconds&&props.seconds}S</p>
     </div>
   );
 };
@@ -21,6 +24,7 @@ const CountdownTimer = (props:any) => {
   const [days, hours, minutes, seconds] = useCountdown(props.targetDate);
 
   if (days + hours + minutes + seconds <= 0) {
+    props.setExpired(true)
     return <ExpiredNotice />;
   } else {
     return (

@@ -149,9 +149,6 @@ const OriginateRosca = () => {
                         'bg-green-500 hover:bg-green-600': 'bg-orange-400'} flex flex-col items-center`}>
                         <button onClick={handleAddRosca} className='w-full text-white font-medium'> Add Rosca </button> 
                       </div>
-                      {/* {JSON.stringify(roscaParameters)}
-                      <br />
-                      {JSON.stringify(roscaDuration)} */}
                    </div>
                 </Dialog.Panel>
             </div>

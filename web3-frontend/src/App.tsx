@@ -3,9 +3,10 @@ import  {useEffect, useState} from 'react';
 import { WalletInfo } from './components/WalletInfo';
 import RoscaCard from './components/RoscaCard';
 import {HiOutlineCollection} from 'react-icons/hi'
+import {GrRefresh} from 'react-icons/gr'
 import { useBeacon, useWalletAddress } from './contexts/Beacon';
 import OriginateRosca from './components/OriginateRosca';
-import { useEndpoint, useNetwork } from './contexts/Settings';
+import { useEndpoint, useNetwork, useRefresh, useSetRefresh } from './contexts/Settings';
 import { TezosToolkit } from '@taquito/taquito';
 import { useAdmins, useContract } from './contexts/Contracts';
 import TrustedAddresses from './components/TrustedAddresses';
@@ -19,10 +20,15 @@ function App() {
   const network = useNetwork()
   const roscaContracts = useContract()
   const admins = useAdmins()
+  const refresh = useRefresh()
+  const setRefresh:any = useSetRefresh()
 
 
   function refreshPage() {
     window.location.reload();
+  }
+  const handleRefresh = ()=>{
+    refresh?setRefresh(false):setRefresh(true)
   }
 
   return (
@@ -41,7 +47,7 @@ function App() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <WalletInfo/>
+              <WalletInfo/> 
             </div>
           </div>
         </nav>
@@ -68,7 +74,7 @@ function App() {
                 </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
-                        <div className='text-right'><button onClick={refreshPage} >Refresh</button></div>
+                        <div className='text-right'><button onClick={refreshPage}><GrRefresh size={'24px'}/></button></div>
                         {roscaContracts && roscaContracts.length>0 && walletAddress ? 
                         <div className="flex flex-row flex-wrap">
                           {roscaContracts&& console.log(roscaContracts)}
