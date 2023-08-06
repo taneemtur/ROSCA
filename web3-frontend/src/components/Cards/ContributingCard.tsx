@@ -1,11 +1,12 @@
 import { TezosToolkit } from '@taquito/taquito'
 import { useState, useEffect } from 'react'
 import {  useEndpoint, useNetwork, useRefresh, useSetRefresh } from '../../contexts/Settings'
-import { FaCoins, FaUserTie, FaUsers, FaPauseCircle ,FaPlayCircle } from 'react-icons/fa'
+import { FaCoins, FaUserTie, FaUsers, FaPauseCircle ,FaPlayCircle, FaUserPlus } from 'react-icons/fa'
 import { ImCross } from 'react-icons/im'
 import { BiReset } from 'react-icons/bi'
 import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 import CountdownTimer from '../CountdownTimer'
+import { Dialog } from '@headlessui/react'
 
 const ContributingCard = (props:any) => {
     const walletAddress = useWalletAddress()
@@ -15,6 +16,8 @@ const ContributingCard = (props:any) => {
     const wallet = useBeacon()
     const network = useNetwork()
     const refresh = useRefresh()
+    const [modalOpen, setModalOpen] = useState(false)
+    const [admin,setAdmin] = useState<any>(null)
     const setRefresh = useSetRefresh()
 
     const [control,setControl] = useState(true)
@@ -132,12 +135,8 @@ const ContributingCard = (props:any) => {
         return datebyTimezone
     }
     const readyToDistirbute =()=>{ 
-        if(expired&&walletAddress==props.admin){
-            if(props.contributors_count==0){
-            setTimeout(()=>{props.emergencyReset()},2000)
-            }else{
+        if(expired&&walletAddress==props.admin&&(props.contributors_count>0)){
             setTimeout(()=>{startDistirbuting()},2000)
-            }
         }
     }
     useEffect(() => {
@@ -163,6 +162,12 @@ const ContributingCard = (props:any) => {
     useEffect(() => {
         console.log("endtime: ", formatEndtime()) 
     }, [])
+    const handleChangeAdmin = ()=>{
+        props.changeAdmin(admin)
+    }
+    const handleModalOpen = ()=>{
+        setModalOpen(true) 
+    }
     
     return (
     <div className='flex'>        
@@ -179,10 +184,10 @@ const ContributingCard = (props:any) => {
                 </div>}
             </div>
             <div className="flex flex-row h-32 pr-6 pl-12 pt-6 justify-between" >
-                <div onClick={props.handleModalOpen}>
-                    <div className='flex flex-row pb-2'> 
+                <div>
+                    <div className={`flex flex-row mb-2 pr-2 rounded ${props.owners.includes(walletAddress) && 'hover:bg-slate-50'}`} onClick={handleModalOpen}> 
                         <div className="pt-1"><FaUserTie/></div>
-                        <p className='pl-2'>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
+                        <p className={`pl-2 ${walletAddress==props.admin && 'font-medium'}`}>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
                     </div>
                     <div className='flex flex-row pb-2 justify-between'>
                         <div className='flex'>
@@ -195,18 +200,18 @@ const ContributingCard = (props:any) => {
                         </div>
                     </div>
                     <div className='flex flex-row pb-2 justify-between'>
-                        <div className="flex flex-row">
+                        <div className="flex flex-row"> 
                             <p>⌛ </p> 
                             {countdown && <CountdownTimer setExpired={setExpired} targetDate={countdown}/>}
                         </div>
                     </div>
                 </div> 
                 <div>
-                    <div className="flex flex-col h-full justify-between">
+                    {props.contributors_count == 0&&<div className="flex flex-col h-full">
                         {walletAddress==props.admin && props.paused?
-                        <button onClick={props.resumeRosca}><FaPlayCircle size={'24px'}/></button>:<button onClick={props.pauseRosca}><FaPauseCircle size={'24px'}/></button>}
-                        {walletAddress==props.admin && <button className='pb-5 pl-1' onClick={handleReset}><BiReset/></button>}
-                    </div>
+                        <button onClick={props.resumeRosca}><FaPlayCircle size={'24px'}/></button>: walletAddress==props.admin &&<button onClick={props.pauseRosca}><FaPauseCircle size={'24px'}/></button>}
+                        {walletAddress==props.admin && !props.paused && <button className='pt-5 pl-1' onClick={handleReset}><BiReset/></button>}
+                    </div>}
                 </div>
             </div>
             {props.paused?<div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center text-xl">Rosca is Paused...</div>:
@@ -219,18 +224,45 @@ const ContributingCard = (props:any) => {
                      {isParticipant()?
                         isContributed()?
                         <div className="pr-2 text-xl"><button disabled={true}>✔ Contributed</button></div>
-                        :<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
-                    :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >X Not Joined</button></div>}
+                        :(props.contributors_count.toNumber()==props.participants_count.toNumber())?<div className="pr-2 text-md text-gray-500"><button disabled={true}>Rosca is full</button></div>:
+                        expired?<div className="pr-2 text-md text-gray-500"><button disabled={true}>Time's over</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
+                    :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >x Not Joined</button></div>}
                 </div>
                 
                 :isParticipant()?
                     isContributed()?
                     <div className="pr-2 text-xl"><button disabled={true}>✔ Contributed</button></div>
-                    :<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
-                :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >X Not Joined</button></div>
+                    :(props.contributors_count.toNumber()==props.participants_count.toNumber())?<div className="pr-2 text-xl text-gray-500"><button disabled={true}>Rosca is full</button></div>:
+                    expired?<div className="pr-2 text-xl text-gray-500"><button disabled={true}>Contribution ended</button></div>:<div className="pr-2 text-xl"><button onClick={contributeRosca}>Contribute {calculateAmount()}ꜩ</button></div>
+                :<div className="pr-2 text-xl text-gray-500"><button disabled={true} >x Not Joined</button></div>
                 }
             </div>}
         </div>}
+    {props.owners.includes(walletAddress)&&
+    <Dialog 
+        open={modalOpen?modalOpen:false} 
+        onClose={() => setModalOpen(false)}
+        className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className='p-4 rounded-lg bg-blue-100 '>
+                <div className="flex flex-col">
+                <div className="">
+                  <p className='text-center text-xl font-bold pb-4'>Change Admin</p>
+                </div>
+                <div className="flex flex-row">
+                <div className='flex flex-wrap mr-4 width-full'><button className='' onClick={()=>{setAdmin(walletAddress)}}>
+                <FaUserPlus size={'40px'}/></button></div> 
+                  <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAdmin(e.target.value)} id='admin-input' value={admin} type="text" />
+                  <div className={`ml-2 mt-1 mb-1 p-2 ${admin? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
+                    {admin ? <button onClick={handleChangeAdmin} className='text-white font-medium'>Add</button>:
+                    <button disabled={true} className='text-white font-medium'>Add</button>}
+                  </div>
+                </div>
+                </div>
+            </Dialog.Panel>
+        </div>
+      </Dialog>}
     </div>
     )
 }

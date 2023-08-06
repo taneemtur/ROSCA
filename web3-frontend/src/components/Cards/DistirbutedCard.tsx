@@ -2,12 +2,13 @@ import { TezosToolkit } from '@taquito/taquito'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import {  useEndpoint, useNetwork, useRefresh, useSetRefresh } from '../../contexts/Settings'
-import {FaCoins, FaUserTie, FaRecycle, FaPauseCircle ,FaPlayCircle} from 'react-icons/fa'
+import {FaCoins, FaUserTie, FaRecycle, FaPauseCircle ,FaPlayCircle, FaUserPlus} from 'react-icons/fa'
 import {VscDebugContinue} from 'react-icons/vsc'
 import { ImCross } from 'react-icons/im'
 import { BiReset } from 'react-icons/bi'
 import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
 import { MdRefresh } from 'react-icons/md'
+import { Dialog } from '@headlessui/react'
 
 
 const DistirbutedCard = (props:any) => {
@@ -19,6 +20,8 @@ const DistirbutedCard = (props:any) => {
     const network = useNetwork()
     const refresh = useRefresh()
     const setRefresh = useSetRefresh()
+    const [modalOpen, setModalOpen] = useState(false)
+    const [admin,setAdmin] = useState<any>(null)
     const [control,setControl] = useState(true)
 
     const parseAddress =(address:string)=>{
@@ -118,7 +121,12 @@ const DistirbutedCard = (props:any) => {
             readyToContinue()
         }
     }, [props.received_count])
-
+    const handleChangeAdmin = ()=>{
+        props.changeAdmin(admin)
+    }
+    const handleModalOpen = ()=>{
+        setModalOpen(true) 
+    }
     return (
     <div className='flex'>
         {props.owner && 
@@ -133,11 +141,10 @@ const DistirbutedCard = (props:any) => {
                     {walletAddress==props.admin&&<div className='bg-red-400 hidden h-10 w-10 pl-2 pt-2 rounded-full group-hover:block' onClick={props.deleteContract}><ImCross color='white' size={'24px'}/></div>}
                 </div>}
             </div>
-            <div className="flex flex-row justify-between h-32 pr-6 pl-12 pt-6 " onClick={props.handleModalOpen}>
+            <div className="flex flex-row justify-between h-32 pr-6 pl-12 pt-6 ">
                 <div className="">
-                    <div className='flex flex-row pb-2'> 
-                        <div className="pt-1"><FaUserTie/></div>
-                        <p className='pl-2'>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
+                <div className={`flex flex-row mb-2 pr-2 rounded ${props.owners.includes(walletAddress) && 'hover:bg-slate-50'}`} onClick={handleModalOpen}>                         <div className="pt-1"><FaUserTie/></div>
+                        <p className={`pl-2 ${walletAddress==props.admin && 'font-medium'}`}>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
                     </div>
                     <div className='flex flex-row pb-2'>
                         <div className="pt-1"><FaCoins/></div>
@@ -154,7 +161,7 @@ const DistirbutedCard = (props:any) => {
                 <div className="flex flex-col justify-between">
                     {walletAddress==props.admin && props.paused?
                     <button onClick={props.resumeRosca}><FaPlayCircle size={'24px'}/></button>: walletAddress==props.admin &&<button onClick={props.pauseRosca}><FaPauseCircle size={'24px'}/></button>}
-                    {walletAddress==props.admin && !props.paused && <button className='pb-5 pl-1' onClick={handleReset}><BiReset/></button>}
+                    {walletAddress==props.admin && !props.paused && (props.participants_count.toNumber()!=props.received_count.toNumber())&& <button className='pb-5 pl-1' onClick={handleReset}><BiReset/></button>}
                 </div>
             </div>
             {props.paused?<div className="flex flex-col bg-[#D9D9D9] w-full h-12 pr-6 pl-6 pt-2 rounded-b-[48px] -mt-[2px] border items-center text-xl">Rosca is Paused...</div>:
@@ -163,10 +170,35 @@ const DistirbutedCard = (props:any) => {
                     (props.participants_count.toNumber()==props.received_count.toNumber())? 
                     <div className="pr-2 text-xl flex"><div className='pt-1 pr-1'><MdRefresh/></div><button onClick={restartRosca}>Restart Rosca</button></div>
                     :<div className="pr-2 text-xl flex"><div className='pt-1 pr-1'><VscDebugContinue/></div><button onClick={continueRosca}>Continue Rosca</button></div>
-                :<div className="pr-2 text-xl"><button>x Not Joined</button></div>
+                :<div className="pr-2 text-xl text-gray-500"><button disabled={true}>x Not Joined</button></div> 
                 }
             </div>}
         </div>}
+        {props.owners.includes(walletAddress)&&
+    <Dialog 
+        open={modalOpen?modalOpen:false} 
+        onClose={() => setModalOpen(false)}
+        className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className='p-4 rounded-lg bg-blue-100 '>
+                <div className="flex flex-col">
+                <div className="">
+                  <p className='text-center text-xl font-bold pb-4'>Change Admin</p>
+                </div>
+                <div className="flex flex-row">
+                <div className='flex flex-wrap mr-4 width-full'><button className='' onClick={()=>{setAdmin(walletAddress)}}>
+                <FaUserPlus size={'40px'}/></button></div> 
+                  <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAdmin(e.target.value)} id='admin-input' value={admin} type="text" />
+                  <div className={`ml-2 mt-1 mb-1 p-2 ${admin? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
+                    {admin ? <button onClick={handleChangeAdmin} className='text-white font-medium'>Add</button>:
+                    <button disabled={true} className='text-white font-medium'>Add</button>}
+                  </div>
+                </div>
+                </div>
+            </Dialog.Panel>
+        </div>
+      </Dialog>}
     </div>
     )
 }
