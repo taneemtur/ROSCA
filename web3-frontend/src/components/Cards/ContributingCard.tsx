@@ -250,15 +250,16 @@ const ContributingCard = (props:any) => {
                 <div className="">
                   <p className='text-center text-xl font-bold pb-4'>Change Admin</p>
                 </div>
-                <div className="flex flex-row">
-                <div className='flex flex-wrap mr-4 width-full'><button className='' onClick={()=>{setAdmin(walletAddress)}}>
-                <FaUserPlus size={'40px'}/></button></div> 
-                  <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAdmin(e.target.value)} id='admin-input' value={admin} type="text" />
-                  <div className={`ml-2 mt-1 mb-1 p-2 ${admin? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
-                    {admin ? <button onClick={handleChangeAdmin} className='text-white font-medium'>Add</button>:
-                    <button disabled={true} className='text-white font-medium'>Add</button>}
-                  </div>
-                </div>
+                <div className="flex flex-row bg-white hover:bg-slate-50">
+                    <div className='flex '><button onClick={()=>{setAdmin(walletAddress)}}>
+                    <FaUserPlus size={'40px'}/></button>
+                    </div> 
+                    <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAdmin(e.target.value)} id='admin-input' value={admin} type="text" />
+                    <div className={`ml-2 mt-1 mb-1 p-2 ${admin? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
+                        {admin ? <button onClick={handleChangeAdmin} className='text-white font-medium'>Add</button>:
+                        <button disabled={true} className='text-white font-medium'>Add</button>}
+                    </div>
+                    </div>
                 </div>
             </Dialog.Panel>
         </div>

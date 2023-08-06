@@ -59,10 +59,10 @@ const TrustedAddresses = (props:any) => {
       err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
   }
   const deleteTrustedAddress = async(contractAddress:string)=>{
-    const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+    const contract = await tezos.wallet.at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
     wallet && setTezosProvider()  
     wallet && tezos.wallet
-    .at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+    .at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
     .then((wallet) => contract.methods.deleteAdmin(contractAddress).send())
     .then((op) => {
         console.log(`Hash: ${op.opHash}`);

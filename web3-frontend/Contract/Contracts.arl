@@ -1,4 +1,4 @@
-// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y
+// contract deployed at ==> https://www.better-call.dev/ghostnet/KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm
 archetype contracts(owner: address)
 
 event ContractAdded{
