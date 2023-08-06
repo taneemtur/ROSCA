@@ -32,10 +32,10 @@ const OriginateRosca = () => {
       }
     }
     const addContract = async(contractAddress:string)=>{
-      const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+      const contract = await tezos.wallet.at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
       wallet && setTezosProvider()  
       wallet && tezos.wallet
-      .at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+      .at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
       .then((wallet) => contract.methods.addContract(contractAddress).send())
       .then((op) => {
           console.log(`Hash: ${op.opHash}`);

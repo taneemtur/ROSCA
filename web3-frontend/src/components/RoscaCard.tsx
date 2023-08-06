@@ -22,6 +22,7 @@ const RoscaCard = (props:any) => {
     const admins = useAdmins()
     const refresh = useRefresh()
     const setRefresh = useSetRefresh()
+    const [control,setControl] = useState(true)
 
     const [modalOpen, setModalOpen] = useState(false)
     const [provider,setProvider] = useState()
@@ -72,16 +73,31 @@ const RoscaCard = (props:any) => {
         }) 
         setStorage(contractStorage)
     },[])
+    // const handleControl = ()=>{
+    //     if(control){
+    //         setControl(false)
+    //         setTimeout(()=>{loadStorage()},3000)
+    //     }
+    // }
+    // useEffect(() => {
+    //     if(!control){
+    //         setTimeout(()=>{
+    //             setControl(true)
+    //         },10000)
+    //     }
+    // }, [control])
 
-    useEffect(() => {
-        setTimeout(()=>{
-            loadStorage()
-            console.log('reloaeddddddddddddd')
-        },5000)
-    }, [])
     useEffect(() => {
         loadStorage()
     }, [])
+    const handleLoad =()=>{
+        loadStorage()
+    }
+
+    // useEffect(() => {
+    //     handleControl()
+    // }, [status])
+
     useEffect(() => {
       loadStorage()
       console.log('reloaeddddddddddddd')
@@ -155,10 +171,10 @@ const RoscaCard = (props:any) => {
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const deleteContract = async()=>{
-        const contract = await tezos.wallet.at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        const contract = await tezos.wallet.at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
         wallet && setTezosProvider()  
         wallet && tezos.wallet
-        .at("KT1PSVEroWzAqeEvQ3eWR9dYqWsHAuDRCj8y")
+        .at("KT1GMqJdN44bQJJGdZ1YRYqPGKadNSAdSpZm")
         .then((wallet) => contract.methods.deleteContract(contractAddress).send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
@@ -170,7 +186,9 @@ const RoscaCard = (props:any) => {
             console.log(`Transaction correctly processed!
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
-            setInterval(()=>{refreshPage()},3000)
+            handleRefresh()
+            refreshPage()
+            refreshPage()
             } else {
             console.log('An error has occurred');
             }
@@ -288,38 +306,35 @@ const RoscaCard = (props:any) => {
     
     return (
         <div className="flex flex-col" >
+            {JSON.stringify(control)}
+            <button onClick={handleLoad}>Loadd</button>
             {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
-            {status?
-            <div>
-                {status && status ==0 && 
+            {<div>
+                { status ==0 && 
                 <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                 paused={paused} deleteContract={deleteContract}/>}
 
-                {status && status ==1 && 
+                {status ==1 && 
                 <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                 participantsArray={participantsArray} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
                 
-                {status && status ==2 && 
+                {status ==2 && 
                 <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                 contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
                 
-                {status && status ==3 && 
+                {status ==3 && 
                 <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                 pot={pot} banned_count={banned_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
                 
-                {status && status ==4 && 
+                {status ==4 && 
                 <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                 pot={pot} contributors_count={contributors_count} received_count={received_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
-            </div>:
-            <div>
-                <Loading/>
-            </div>
-            }
+            </div>}
             <Dialog 
             open={modalOpen?modalOpen:false} 
             onClose={() => setModalOpen(false)}

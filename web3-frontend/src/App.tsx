@@ -30,7 +30,10 @@ function App() {
   const handleRefresh = ()=>{
     refresh?setRefresh(false):setRefresh(true)
   }
-
+  // useEffect(() => {
+  //   refreshPage()
+  // }, [refresh])
+  
   return (
     <div className="flex-col flex">
       <header className="bg-[#09427d]">
