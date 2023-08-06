@@ -144,12 +144,12 @@ const RoscaCard = (props:any) => {
             console.log(error)  
         }
     }
-    const changeAdmin = async()=>{
+    const changeAdmin = async(adminAddress:any)=>{
         const contract = await tezos.wallet.at(contractAddress)
         wallet && setTezosProvider()  
         wallet && tezos.wallet
         .at(contractAddress)
-        .then((wallet) => contract.methods.changeAdmin(walletAddress).send())
+        .then((wallet) => contract.methods.changeAdmin(adminAddress).send())
         .then((op) => {
             console.log(`Hash: ${op.opHash}`);
             return op.confirmation();
@@ -305,35 +305,35 @@ const RoscaCard = (props:any) => {
     }
     
     return (
-        <div className="flex flex-col" >
-            {JSON.stringify(control)}
-            <button onClick={handleLoad}>Loadd</button>
-            {admins && admins.includes(walletAddress) && <button onClick={changeAdmin}>MakeMeAdmin</button>}
+        <div className="flex flex-col my-2 mx-0" >
+            {/* <button onClick={handleLoad}>Loadd</button> */}
             {<div>
                 { status ==0 && 
                 <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                paused={paused} deleteContract={deleteContract}/>}
+                paused={paused} deleteContract={deleteContract} owners={props.owners}/>}
 
                 {status ==1 && 
                 <CollectingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                participantsArray={participantsArray} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
+                participantsArray={participantsArray} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} changeAdmin={changeAdmin} owners={props.owners}/>}
                 
                 {status ==2 && 
                 <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
+                contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
+                owners={props.owners}/>}
                 
                 {status ==3 && 
                 <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                pot={pot} banned_count={banned_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
+                pot={pot} banned_count={banned_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} owners={props.owners}/>}
                 
                 {status ==4 && 
                 <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                pot={pot} contributors_count={contributors_count} received_count={received_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}/>}
+                pot={pot} contributors_count={contributors_count} received_count={received_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
+                owners={props.owners}/>}
             </div>}
             <Dialog 
             open={modalOpen?modalOpen:false} 

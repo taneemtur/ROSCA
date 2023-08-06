@@ -1,9 +1,11 @@
 import { TezosToolkit } from '@taquito/taquito'
 import {  useEndpoint, useNetwork, useRefresh, useSetRefresh } from '../../contexts/Settings'
-import { FaCoins, FaUserTie, FaUsers, FaPauseCircle ,FaPlayCircle } from 'react-icons/fa'
+import { FaCoins, FaUserTie, FaUsers, FaPauseCircle ,FaPlayCircle, FaUserPlus } from 'react-icons/fa'
 import { ImCross } from 'react-icons/im'
 import { BiReset } from 'react-icons/bi'
 import { useBeacon, useWalletAddress } from '../../contexts/Beacon'
+import { Dialog } from '@headlessui/react'
+import { useState } from 'react'
 
 const DistirbutingCard = (props:any) => {
     const walletAddress = useWalletAddress()
@@ -14,6 +16,8 @@ const DistirbutingCard = (props:any) => {
     const network = useNetwork()
     const refresh = useRefresh()
     const setRefresh = useSetRefresh()
+    const [modalOpen, setModalOpen] = useState(false)
+    const [admin,setAdmin] = useState<any>(null)
 
     const parseAddress =(address:string)=>{
         const parsed = address.slice(0,6)+ "........" +address.slice(address.length-7,address.length)
@@ -67,6 +71,12 @@ const DistirbutingCard = (props:any) => {
         alert("Warning! You're about to interrupt the Rosca cycle and start over. If you do not want to do this, please cancel the transaction in the pop-up window.")
         props.emergencyReset()
     }
+    const handleChangeAdmin = ()=>{
+        props.changeAdmin(admin)
+    }
+    const handleModalOpen = ()=>{
+        setModalOpen(true) 
+    }
     return (
     <div className='flex'>
         {props.owner && 
@@ -83,10 +93,10 @@ const DistirbutingCard = (props:any) => {
             </div>    
             <div className="flex flex-col h-32 pr-6 pl-12 pt-6" >
                 <div className="flex justify-between" >
-                    <div className="" onClick={props.handleModalOpen}>
-                        <div className='flex flex-row pb-2'> 
+                    <div className="">
+                        <div className={`flex flex-row mb-2 pr-2 rounded ${props.owners.includes(walletAddress) && 'hover:bg-slate-50'}`} onClick={handleModalOpen}> 
                             <div className="pt-1"><FaUserTie/></div>
-                            <p className='pl-2'>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
+                            <p className={`pl-2 ${walletAddress==props.admin && 'font-medium'}`}>{props.admin?parseAddress(props.admin):parseAddress(props.owner)}</p>
                         </div>
                         <div className='flex flex-row pb-2'>
                             <div className="pt-1"><FaCoins/></div>
@@ -120,6 +130,31 @@ const DistirbutingCard = (props:any) => {
                 }
             </div>}
         </div>}
+    {props.owners.includes(walletAddress)&&
+    <Dialog 
+        open={modalOpen?modalOpen:false} 
+        onClose={() => setModalOpen(false)}
+        className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+            <Dialog.Panel className='p-4 rounded-lg bg-blue-100 '>
+                <div className="flex flex-col">
+                <div className="">
+                  <p className='text-center text-xl font-bold pb-4'>Change Admin</p>
+                </div>
+                <div className="flex flex-row">
+                <div className='flex flex-wrap mr-4 width-full'><button className='' onClick={()=>{setAdmin(walletAddress)}}>
+                <FaUserPlus size={'40px'}/></button></div> 
+                  <input className='w-96' placeholder='tz0xxx.........xxx' onChange={(e)=>setAdmin(e.target.value)} id='admin-input' value={admin} type="text" />
+                  <div className={`ml-2 mt-1 mb-1 p-2 ${admin? 'bg-green-500 hover:bg-green-600': 'bg-orange-400'} rounded-md`}>
+                    {admin ? <button onClick={handleChangeAdmin} className='text-white font-medium'>Add</button>:
+                    <button disabled={true} className='text-white font-medium'>Add</button>}
+                  </div>
+                </div>
+                </div>
+            </Dialog.Panel>
+        </div>
+      </Dialog>}
     </div>
     )
 }

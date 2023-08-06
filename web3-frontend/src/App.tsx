@@ -22,7 +22,7 @@ function App() {
   const admins = useAdmins()
   const refresh = useRefresh()
   const setRefresh:any = useSetRefresh()
-
+  const owners = ["tz1f4mS8qV5D8fVZ8hQAJTUtmEjydsJiJNpu","tz1dFWw5RugiquySipMwSpSaGgNRusDcy4FR"]
 
   function refreshPage() {
     window.location.reload();
@@ -82,7 +82,7 @@ function App() {
                         <div className="flex flex-row flex-wrap">
                           {roscaContracts&& console.log(roscaContracts)}
                           {roscaContracts.map((c:any)=>{
-                          return <RoscaCard contract={c}/>
+                          return <RoscaCard contract={c} owners={owners}/>
                           })}
                         </div>:
                         <div className="">
@@ -91,7 +91,7 @@ function App() {
                         </div>
                         }
                     </div>
-                    <TrustedAddresses/>
+                    <TrustedAddresses owners={owners}/>
               </div>
             </div>
           </div>
