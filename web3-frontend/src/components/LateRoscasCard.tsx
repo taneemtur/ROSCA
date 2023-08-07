@@ -155,7 +155,6 @@ const LateRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const deleteContract = async()=>{
@@ -183,7 +182,6 @@ const LateRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const pauseRosca = async()=>{
@@ -209,7 +207,6 @@ const LateRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const resumeRosca = async()=>{
@@ -235,7 +232,6 @@ const LateRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const emergencyReset = async()=>{
@@ -261,7 +257,6 @@ const LateRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     function formatEndtime(end_time:any) {

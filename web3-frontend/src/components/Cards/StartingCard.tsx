@@ -68,7 +68,6 @@ const StartingCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
         
     }

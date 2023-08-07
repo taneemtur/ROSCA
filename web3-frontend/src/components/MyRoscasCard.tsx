@@ -154,7 +154,6 @@ const MyRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const deleteContract = async()=>{
@@ -182,7 +181,6 @@ const MyRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const pauseRosca = async()=>{
@@ -208,7 +206,6 @@ const MyRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const resumeRosca = async()=>{
@@ -234,7 +231,6 @@ const MyRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const emergencyReset = async()=>{
@@ -260,7 +256,6 @@ const MyRoscasCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     function formatEndtime(end_time:any) {
@@ -306,7 +301,7 @@ const MyRoscasCard = (props:any) => {
                     contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                     participantsArray={participantsArray} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} changeAdmin={changeAdmin} owners={props.owners}
                     id={props.id}/>}
-                    
+
                     {status ==2 && 
                     <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                     contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
