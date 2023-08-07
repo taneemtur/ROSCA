@@ -10,6 +10,8 @@ import { useEndpoint, useNetwork, useRefresh, useSetRefresh } from './contexts/S
 import { TezosToolkit } from '@taquito/taquito';
 import { useAdmins, useContract } from './contexts/Contracts';
 import TrustedAddresses from './components/TrustedAddresses';
+import LateRoscasCard from './components/LateRoscasCard';
+import MyRoscasCard from './components/MyRoscasCard';
  
 
 function App() {
@@ -30,9 +32,6 @@ function App() {
   const handleRefresh = ()=>{
     refresh?setRefresh(false):setRefresh(true)
   }
-  // useEffect(() => {
-  //   refreshPage()
-  // }, [refresh])
   
   return (
     <div className="flex-col flex">
@@ -79,11 +78,34 @@ function App() {
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-6 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "> 
                         <div className='text-right'><button onClick={refreshPage}><GrRefresh size={'24px'}/></button></div>
                         {roscaContracts && roscaContracts.length>0 && walletAddress ? 
-                        <div className="flex flex-row flex-wrap">
-                          {roscaContracts&& console.log(roscaContracts)}
-                          {roscaContracts.map((c:any)=>{
-                          return <RoscaCard contract={c} owners={owners}/>
-                          })}
+                        <div className="">
+                          <div className="">
+                            <p className='font-bold text-lg'>My Roscas: </p>
+                            <div className="flex flex-row flex-wrap">
+                              {roscaContracts&& console.log(roscaContracts)}
+                              {roscaContracts.map((c:any,i:number)=>{
+                              return <MyRoscasCard contract={c} owners={owners} id={i}/>
+                              })}
+                            </div>
+                          </div>
+                          <div className="">
+                            <p className='font-bold text-lg'>Early Roscas: </p>
+                            <div className="flex flex-row flex-wrap">
+                              {roscaContracts&& console.log(roscaContracts)}
+                              {roscaContracts.map((c:any,i:number)=>{
+                              return <RoscaCard contract={c} owners={owners} id={i}/>
+                              })}
+                            </div>
+                          </div>
+                          <div className="">
+                            <p className='font-bold text-lg'>Late Roscas: </p>
+                            <div className="flex flex-row flex-wrap">
+                              {roscaContracts&& console.log(roscaContracts)}
+                              {roscaContracts.map((c:any,i:number)=>{
+                              return <LateRoscasCard contract={c} owners={owners} id={i}/>
+                              })}
+                            </div>
+                          </div>
                         </div>:
                         <div className="">
                           <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>

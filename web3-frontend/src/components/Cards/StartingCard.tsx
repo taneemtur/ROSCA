@@ -121,7 +121,7 @@ const StartingCard = (props:any) => {
         {props.owner && <div className='bg-[#EBEBEB] m-1 w-[380px] h-64  rounded-[48px] border border-black'> 
            <div className='flex flex-row justify-between bg-[#09417D] w-full h-20 pr-6 pl-10 pt-4 rounded-t-[48px]' onClick={props.handleModalOpen}>
                 <div className="text-xl text-white">
-                    <p>Rosca: {parseAddress(contractAddress)}</p>
+                    <p className='font-bold text-start'>Rosca: - {props.id}</p>
                     <p className='text-start'>Starting...</p>
                 </div>
                 {props.paused?<div className="bg-gray-400 mt-2 h-10 w-10 rounded-full"></div>:

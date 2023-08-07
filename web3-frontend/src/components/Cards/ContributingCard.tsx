@@ -136,6 +136,7 @@ const ContributingCard = (props:any) => {
     }
     const readyToDistirbute =()=>{ 
         if(expired&&walletAddress==props.admin&&(props.contributors_count>0)){
+            alert(`You will skip distirbuting stage on Rosca ${contractAddress}`)
             setTimeout(()=>{startDistirbuting()},2000)
         }
     }
@@ -175,7 +176,7 @@ const ContributingCard = (props:any) => {
         <div className='bg-[#EBEBEB] m-1 w-[380px] h-64  rounded-[48px] border border-black'> 
            <div className='flex flex-row justify-between bg-[#09417D] w-full h-20 pr-6 pl-10 pt-4 rounded-t-[48px]' onClick={props.handleModalOpen}>
                 <div className="text-xl text-white">
-                    <p>Rosca: {parseAddress(contractAddress)}</p>
+                    <p className='font-bold text-start'>Rosca: - {props.id}</p>
                     {props.paused?<p className='text-start'>Contributing (Paused)</p>:<p className='text-start'>Contributing...</p>}
                 </div>
                 {props.paused?<div className="bg-gray-400 mt-2 h-10 w-10 rounded-full"></div>:

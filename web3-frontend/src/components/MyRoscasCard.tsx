@@ -12,7 +12,7 @@ import DistirbutedCard from './Cards/DistirbutedCard'
 import { Dialog } from '@headlessui/react'
 import { useAdmins } from '../contexts/Contracts'
 
-const RoscaCard = (props:any) => {
+const MyRoscasCard = (props:any) => {
     const walletAddress:any = useWalletAddress()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
@@ -175,6 +175,7 @@ const RoscaCard = (props:any) => {
             Chain ID: ${result.block.chain_id}`);
             handleRefresh()
             refreshPage()
+            refreshPage()
             } else {
             console.log('An error has occurred');
             }
@@ -292,7 +293,7 @@ const RoscaCard = (props:any) => {
     
     return (
         <div className="">
-            {(status<=1 && participantsAddresses && !participantsAddresses.includes(walletAddress)) &&
+            {(participantsAddresses && participantsAddresses.includes(walletAddress)) &&
             <div className="flex flex-col my-2 mx-0" >
                 {<div>
                     { status ==0 && 
@@ -305,6 +306,23 @@ const RoscaCard = (props:any) => {
                     contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
                     participantsArray={participantsArray} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} changeAdmin={changeAdmin} owners={props.owners}
                     id={props.id}/>}
+                    
+                    {status ==2 && 
+                    <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
+                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
+                    contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
+                    owners={props.owners} id={props.id}/>}
+                    
+                    {status ==3 && 
+                    <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
+                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
+                    pot={pot} banned_count={banned_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} owners={props.owners} id={props.id}/>}
+                    
+                    {status ==4 && 
+                    <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
+                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
+                    pot={pot} contributors_count={contributors_count} received_count={received_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
+                    owners={props.owners} id={props.id}/>}
                 </div>}
                 <Dialog 
                 open={modalOpen?modalOpen:false} 
@@ -351,4 +369,4 @@ const RoscaCard = (props:any) => {
         </div>
     )
 }
-export default RoscaCard
+export default MyRoscasCard
