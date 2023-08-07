@@ -83,22 +83,15 @@ const MyRoscasCard = (props:any) => {
     }
     useEffect(() => {
       loadStorage()
-      console.log('reloaeddddddddddddd')
     }, [refresh])
     
 
     useEffect(()=>{
         const keys = participant && Object.values(participant)[0]
-        keys&& console.log(keys)
         const keyArr = keys && Array.from(keys.values())
-        keyArr && console.log(keyArr[0])
 
         const values = participant && Object.values(participant)[0]
         const valueArr = values && Array.from(values.keys())
-        valueArr && console.log(valueArr)
-        valueArr && valueArr.forEach((e:any) => {
-            console.log(e.slice(1,e.length-1))
-        }); 
         const length = participant && participant.valueMap.size
         const myArr = participant&& []
         const addresses = participant && []
@@ -106,11 +99,8 @@ const MyRoscasCard = (props:any) => {
             for(let i=0;i<length;i++){  
                 addresses.push(valueArr[i].slice(1,valueArr[i].length-1))
                 let participantObject = {address:valueArr[i].slice(1,valueArr[i].length-1), values: keyArr[i]}
-                participantObject && console.log('part',participantObject) 
                 myArr.push(participantObject)
             }
-            console.log(myArr)
-            console.log('addresses',addresses)
             setParticipantsAddresses(addresses)
             myArr&& setParticipantsArray(myArr)
          }
@@ -126,7 +116,6 @@ const MyRoscasCard = (props:any) => {
             wallet && wallet.requestPermissions({ network: { type: network } })
             const provider = wallet && await tezos.setWalletProvider(wallet) 
             provider && setProvider(provider)
-            console.log(provider)
         } catch (error) {
             console.log(error)  
         }
@@ -285,10 +274,15 @@ const MyRoscasCard = (props:any) => {
     function refreshPage() {
         window.location.reload();
     }
-    
+    useEffect(() => {
+        if(!participantsAddresses.includes(walletAddress)){
+          props.setMyRoscas(false)
+        } 
+    }, [status]) 
+
     return (
         <div className="">
-            {(participantsAddresses && participantsAddresses.includes(walletAddress)) &&
+            {participantsAddresses && participantsAddresses.includes(walletAddress)&&
             <div className="flex flex-col my-2 mx-0" >
                 {<div>
                     { status ==0 && 

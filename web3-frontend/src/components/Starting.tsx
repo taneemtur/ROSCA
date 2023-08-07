@@ -12,7 +12,7 @@ import DistirbutedCard from './Cards/DistirbutedCard'
 import { Dialog } from '@headlessui/react'
 import { useAdmins } from '../contexts/Contracts'
 
-const LateRoscasCard = (props:any) => {
+const Starting = (props:any) => {
     const walletAddress:any = useWalletAddress()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
@@ -78,10 +78,6 @@ const LateRoscasCard = (props:any) => {
     useEffect(() => {
         loadStorage()
     }, [])
-    const handleLoad =()=>{
-        loadStorage()
-    }
-
     useEffect(() => {
       loadStorage()
       console.log('reloaeddddddddddddd')
@@ -90,16 +86,10 @@ const LateRoscasCard = (props:any) => {
 
     useEffect(()=>{
         const keys = participant && Object.values(participant)[0]
-        keys&& console.log(keys)
         const keyArr = keys && Array.from(keys.values())
-        keyArr && console.log(keyArr[0])
 
         const values = participant && Object.values(participant)[0]
         const valueArr = values && Array.from(values.keys())
-        valueArr && console.log(valueArr)
-        valueArr && valueArr.forEach((e:any) => {
-            console.log(e.slice(1,e.length-1))
-        }); 
         const length = participant && participant.valueMap.size
         const myArr = participant&& []
         const addresses = participant && []
@@ -107,11 +97,8 @@ const LateRoscasCard = (props:any) => {
             for(let i=0;i<length;i++){  
                 addresses.push(valueArr[i].slice(1,valueArr[i].length-1))
                 let participantObject = {address:valueArr[i].slice(1,valueArr[i].length-1), values: keyArr[i]}
-                participantObject && console.log('part',participantObject) 
                 myArr.push(participantObject)
             }
-            console.log(myArr)
-            console.log('addresses',addresses)
             setParticipantsAddresses(addresses)
             myArr&& setParticipantsArray(myArr)
          }
@@ -174,7 +161,6 @@ const LateRoscasCard = (props:any) => {
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
             handleRefresh()
-            refreshPage()
             refreshPage()
             } else {
             console.log('An error has occurred');
@@ -286,29 +272,19 @@ const LateRoscasCard = (props:any) => {
     function refreshPage() {
         window.location.reload();
     }
+    useEffect(() => {
+        if(status == 0){
+          props.setStarting(true)
+        } 
+      }, [status])
     
     return (
         <div className="">
-            {(status>1 && participantsAddresses && !participantsAddresses.includes(walletAddress)) &&
+            {(status==0 && participantsAddresses && !participantsAddresses.includes(walletAddress)) &&
             <div className="flex flex-col my-2 mx-0" >
-                {<div>                    
-                    {status ==2 && 
-                    <ContributingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
-                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                    contributors_count={contributors_count} participantsArray={participantsArray} end_time={end_time} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
-                    owners={props.owners} id={props.id}/>}
-                    
-                    {status ==3 && 
-                    <DistirbutingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
-                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                    pot={pot} banned_count={banned_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset} owners={props.owners} id={props.id}/>}
-                    
-                    {status ==4 && 
-                    <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
-                    contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
-                    pot={pot} contributors_count={contributors_count} received_count={received_count} receiver={receiver} paused={paused} deleteContract={deleteContract} emergencyReset={emergencyReset}
-                    owners={props.owners} id={props.id}/>}
-                </div>}
+                <StartingCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
+                contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
+                paused={paused} deleteContract={deleteContract} owners={props.owners} id={props.id}/>
                 <Dialog 
                 open={modalOpen?modalOpen:false} 
                 onClose={() => setModalOpen(false)}
@@ -337,7 +313,6 @@ const LateRoscasCard = (props:any) => {
                         <p>Admin: {parseAddress(admin)}</p>
                         <p className='font-bold'>Participants</p>
                         {participantsArray && participantsArray.map((e:any,i:number)=>{
-                            console.log(e.address)
                             return (
                                 <div className="">
                                     {participants_count > 0 ? 
@@ -354,4 +329,4 @@ const LateRoscasCard = (props:any) => {
         </div>
     )
 }
-export default LateRoscasCard
+export default Starting

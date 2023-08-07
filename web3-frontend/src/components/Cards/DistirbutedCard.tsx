@@ -125,6 +125,8 @@ const DistirbutedCard = (props:any) => {
     const handleModalOpen = ()=>{
         setModalOpen(true) 
     }
+
+    
     return (
     <div className='flex'>
         {props.owner && 
