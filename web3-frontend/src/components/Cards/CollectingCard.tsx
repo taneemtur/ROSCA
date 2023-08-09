@@ -69,7 +69,7 @@ const CollectingCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
+            
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     }
     const startContributing = async()=>{
@@ -95,11 +95,11 @@ const CollectingCard = (props:any) => {
         })
         .catch((err) => {
             console.log(err)
-            err.message && err.message.slice(0,10) == 'rate limit' && refreshPage()
             err.data&&err.data[1].with&& err.data[1].with.string == "INVALID_STATE" && refreshPage()});
     } 
     const readyToContribute =()=>{ 
         if((props.max_participants.toNumber()<=props.participants_count.toNumber())&&walletAddress==props.admin){
+            alert(`You will skip contributing stage on Rosca ${contractAddress}`)
             setTimeout(()=>{startContributing()},2000)
         }
     }
@@ -142,7 +142,7 @@ const CollectingCard = (props:any) => {
         <div className='bg-[#EBEBEB] m-1 w-[380px] h-64  rounded-[48px] border border-black'> 
             <div className='flex flex-row justify-between bg-[#09417D] w-full h-20 pr-6 pl-10 pt-4 rounded-t-[48px]' >
                 <div className="text-xl text-white" onClick={props.handleModalOpen}>
-                    <p>Rosca: {parseAddress(contractAddress)}</p>
+                    <p className='font-bold text-start'>Rosca: - {props.id}</p>
                     {props.paused?<p className='text-start'>Collecting (Paused)</p>:<p className='text-start'>Collecting Applications...</p>}
                 </div>
                 {props.paused?<div className="bg-gray-400 mt-2 h-10 w-10 rounded-full"></div>:

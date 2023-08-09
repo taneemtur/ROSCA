@@ -12,7 +12,7 @@ import DistirbutedCard from './Cards/DistirbutedCard'
 import { Dialog } from '@headlessui/react'
 import { useAdmins } from '../contexts/Contracts'
 
-const RoscaCard = (props:any) => {
+const MyRoscasCard = (props:any) => {
     const walletAddress:any = useWalletAddress()
     const endpoint = useEndpoint()
     const contractAddress = props.contract
@@ -78,9 +78,11 @@ const RoscaCard = (props:any) => {
     useEffect(() => {
         loadStorage()
     }, [])
+    const handleLoad =()=>{
+        loadStorage()
+    }
     useEffect(() => {
       loadStorage()
-      console.log('reloaeddddddddddddd')
     }, [refresh])
     
 
@@ -114,7 +116,6 @@ const RoscaCard = (props:any) => {
             wallet && wallet.requestPermissions({ network: { type: network } })
             const provider = wallet && await tezos.setWalletProvider(wallet) 
             provider && setProvider(provider)
-            console.log(provider)
         } catch (error) {
             console.log(error)  
         }
@@ -161,6 +162,7 @@ const RoscaCard = (props:any) => {
             Block: ${result.block.header.level}
             Chain ID: ${result.block.chain_id}`);
             handleRefresh()
+            refreshPage()
             refreshPage()
             } else {
             console.log('An error has occurred');
@@ -272,10 +274,15 @@ const RoscaCard = (props:any) => {
     function refreshPage() {
         window.location.reload();
     }
-    
+    useEffect(() => {
+        if(!participantsAddresses.includes(walletAddress)){
+          props.setMyRoscas(false)
+        } 
+    }, [status]) 
+
     return (
         <div className="">
-            {(status<=1 && participantsAddresses && !participantsAddresses.includes(walletAddress)) &&
+            {participantsAddresses && participantsAddresses.includes(walletAddress)&&
             <div className="flex flex-col my-2 mx-0" >
                 {<div>
                     { status ==0 && 
@@ -334,6 +341,7 @@ const RoscaCard = (props:any) => {
                         <p>Admin: {parseAddress(admin)}</p>
                         <p className='font-bold'>Participants</p>
                         {participantsArray && participantsArray.map((e:any,i:number)=>{
+                            console.log(e.address)
                             return (
                                 <div className="">
                                     {participants_count > 0 ? 
@@ -350,4 +358,4 @@ const RoscaCard = (props:any) => {
         </div>
     )
 }
-export default RoscaCard
+export default MyRoscasCard
