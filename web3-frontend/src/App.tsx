@@ -181,51 +181,6 @@ function App() {
                                 })}
                             </div>
                           </div> 
-                         {/* <div className="">
-                            <p className='font-bold text-lg'>-Starting-</p>
-                            <div className="flex flex-row flex-wrap">
-                              {startingContracts.map((c:any,i:number)=>{
-                                setId(id+1)
-                              return <RoscaCard contract={c} owners={owners} id={id}/>
-                              })}
-                            </div>
-                          </div>   */}
-                          {/* <div className="">
-                            <p className='font-bold text-lg'>-Collecting-</p>
-                            <div className="flex flex-row flex-wrap">
-                              {collectingContracts.map((c:any,i:number)=>{
-                                setId(id+1)
-                              return <RoscaCard contract={c} owners={owners} id={id}/>
-                              })}
-                            </div>
-                          </div>
-                          <div className="">
-                            <p className='font-bold text-lg'>--Contributing</p>
-                            <div className="flex flex-row flex-wrap">
-                              {contributingContracts.map((c:any,i:number)=>{
-                                setId(id+1)
-                              return <RoscaCard contract={c} owners={owners} id={id}/>
-                              })}
-                            </div>
-                          </div>
-                          <div className="">
-                            <p className='font-bold text-lg'>-Distirbuting-</p>
-                            <div className="flex flex-row flex-wrap">
-                              {distirbutingContracts.map((c:any,i:number)=>{
-                                setId(id+1)
-                              return <RoscaCard contract={c} owners={owners} id={id}/>
-                              })}
-                            </div>
-                          </div>
-                          <div className="">
-                            <p className='font-bold text-lg'>-Distirbuted-</p>
-                            <div className="flex flex-row flex-wrap">
-                              {distirbutedContracts.map((c:any,i:number)=>{
-                                setId(id+1)
-                              return <RoscaCard contract={c} owners={owners} id={id}/>
-                              })}
-                            </div>
-                          </div> */}
                         </div>:
                         <div className="">
                           <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>
