@@ -276,7 +276,7 @@ const MyRoscasCard = (props:any) => {
     }
     useEffect(() => {
         if(!participantsAddresses.includes(walletAddress)){
-          props.setMyRoscas(false)
+          props.setMyRoscas(true)
         } 
     }, [status]) 
 

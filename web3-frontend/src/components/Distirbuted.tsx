@@ -277,14 +277,23 @@ const Distirbuted = (props:any) => {
         window.location.reload();
     }
     useEffect(() => {
-      if(status == 4){
-        props.setDistirbuted(true)
-      } 
-    }, [status]) 
+      if(status==4 && participantsAddresses){
+        console.log(participantsAddresses.includes(walletAddress))
+        if(!participantsAddresses.includes(walletAddress)) {
+            
+            props.setDistirbuted(true)
+        }
+      }
+    }, [status,participantsAddresses]) 
+    // useEffect(() => {
+    //     if(participantsAddresses.includes(walletAddress)&&1){
+    //         console.log(participantsAddresses.includes(walletAddress))
+    //     }
+    // }, [status]) 
     
     return (
         <div className="">  
-            {(status==4 && participantsAddresses && !participantsAddresses.includes(walletAddress)) &&
+            {((status==4 && participantsAddresses && !participantsAddresses.includes(walletAddress))) ?
             <div className="flex flex-col my-2 mx-0" > 
                 <DistirbutedCard handleModalOpen={handleModalOpen} loadStorage={loadStorage} setRefresh={setRefresh} pauseRosca={pauseRosca} resumeRosca={resumeRosca} 
                 contract={contractAddress} owner={owner} admin={admin} rosca_total={rosca_total} participants_count={participants_count} max_participants={max_participants} 
@@ -330,6 +339,9 @@ const Distirbuted = (props:any) => {
                     </Dialog.Panel>
                 </div>
                 </Dialog>
+            </div>
+            :<div>
+            {props.setDistirbuted(false)}
             </div>}
         </div>
     )
